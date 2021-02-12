@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Debug from 'debug';
-
-const debug = new Debug('elrond');
+const debug = Debug('elrond');
+import { logger } from '../logger'
 
 export async function getBalance(address: string) {
   try {
@@ -10,7 +10,7 @@ export async function getBalance(address: string) {
     debug(`${address} balance: ${balance}`);
     return balance;
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     return 0;
   }
 }

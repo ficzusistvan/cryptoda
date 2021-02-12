@@ -10,6 +10,7 @@ import * as zabo from './tools/my-zabo';
 import * as gecko from './tools/coingecko'
 import config from './config.json'
 import * as portfolio from './tools/portfolio'
+import { logger } from './logger'
 
 const ONE_MINUTE = 60 * 1000;
 const INFURA_PROJECT_ID = config.infura.project_id;
@@ -44,27 +45,27 @@ app.use(routes);
 
 let init = async () => {
   await binance.init(BINANCE_API_KEY, BINANCE_SECRET_KEY);
-  console.info(`Binance init`);
+  logger.info(`Binance init`);
   await celsius.init(CELSIUS_PARTNER_KEY, CELSIUS_API_KEY);
-  console.info(`Celsius init`);
+  logger.info(`Celsius init`);
   await coinbase.init(COINBASE_API_KEY, COINBASE_SECRET_KEY);
-  console.info(`Coinbase init`);
+  logger.info(`Coinbase init`);
 
   await ethers.init(INFURA_PROJECT_ID, INFURA_PROJECT_SECRET);
-  console.info(`Ethers init`);
+  logger.info(`Ethers init`);
 
   //await zabo.init(ZABO_SANDBOX_API_KEY, ZABO_SANDBOX_SECRET_KEY, 'sandbox');
   await zabo.init(ZABO_LIVE_API_KEY, ZABO_LIVE_SECRET_KEY, 'live');
-  console.info(`Zabo init`);
+  logger.info(`Zabo init`);
 
   await gecko.init();
-  console.info(`Coingecko init`);
+  logger.info(`Coingecko init`);
 
-  portfolio.getUserPortfolio('');
+  portfolio.getUserPortfolio('myliveuser');
 }
 
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+  logger.info(`⚡️[server]: Server is running at https://localhost:${port}`);
 });
 
 let updatePricesTask = () => {

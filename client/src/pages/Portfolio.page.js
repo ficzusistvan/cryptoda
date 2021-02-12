@@ -21,45 +21,6 @@ export default function Portfolio() {
   useEffect(() => {
     console.log(`useEffect 1 called...`);
     const getData = async () => {
-      const walletsData = await axios.get('api/portfolio/wallets');
-      console.log(walletsData.data);
-      setWallets(walletsData.data);
-      for (const [wallet, symbols] of Object.entries(walletsData.data)) {
-        for (const [symbol, value] of Object.entries(symbols)) {
-          if (!portfolioCoins.includes(symbol.toUpperCase())) {
-            setPortfolioCoins(portfolioCoins => [...portfolioCoins, symbol.toUpperCase()]);
-          }
-        }
-      }
-
-      const cexesData = await axios.get('api/portfolio/cexes');
-      console.log(cexesData.data);
-      setCexes(cexesData.data);
-      for (const [cex, symbols] of Object.entries(cexesData.data)) {
-        for (const [symbol, value] of Object.entries(symbols)) {
-          if (!portfolioCoins.includes(symbol.toUpperCase())) {
-            setPortfolioCoins(portfolioCoins => [...portfolioCoins, symbol.toUpperCase()]);
-          }
-        }
-      }
-
-      const egldData = await axios.get('api/portfolio/elrond');
-      console.log(egldData.data);
-      setEgld(egldData.data);
-      for (const [symbol, value] of Object.entries(egldData.data)) {
-        if (!portfolioCoins.includes(symbol.toUpperCase())) {
-          setPortfolioCoins(portfolioCoins => [...portfolioCoins, symbol.toUpperCase()]);
-        }
-      }
-      
-      const wavesData = await axios.get('api/portfolio/waves');
-      console.log(wavesData.data);
-      setWaves(wavesData.data);
-      for (const [symbol, value] of Object.entries(wavesData.data)) {
-        if (!portfolioCoins.includes(symbol.toUpperCase())) {
-          setPortfolioCoins(portfolioCoins => [...portfolioCoins, symbol.toUpperCase()]);
-        }
-      }
     }
     getData();
   }, []);
@@ -90,15 +51,6 @@ export default function Portfolio() {
     }
     getData();
   }, []);
-
-  useEffect(() => {
-    console.log(`useEffect 3 called...`);
-    const getData = async () => {
-      const prices = await axios.get(`api/rates/coingecko?portfolioCoins=${portfolioCoins.join(',')}`);
-      console.log(prices);
-    }
-    getData();
-  }, [portfolioCoins]);
 
   function zaboConnectToProvider(e) {
     zabo.current.connect({ provider: 'blockFi' }).onConnection(async (account) => {

@@ -11,8 +11,11 @@ import * as gecko from '../tools/coingecko'
 import * as binance from '../cex/binance'
 import * as celsius from '../cex/celsius'
 import * as waves from '../cex/waves'
+import * as zabo from './my-zabo'
 import Big from 'big.js'
 import { logger } from '../logger'
+import Debug from 'debug'
+const debug = Debug('portfolio')
 
 const erc20TokenAddresses: Map<string, string> = new Map();
 erc20TokenAddresses.set('USDC', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
@@ -105,23 +108,41 @@ async function getCexesPortfolio(userId: string) {
   return { cexBalances, cexCoins };
 }
 
+async function getZaboPortfolio(userId: string) {
+  const zaboCoins: Array<string> = [];
+  const zaboBalances: Map<string, Array<iBalance>> = new Map();
+
+  const blockfiBalance = await zabo.getBlockFiBalance(userId);
+  const blockfiBalances: Array<iBalance> = [];
+  for (const [key, value] of (Object as any).entries(blockfiBalance)) {
+    let obj: iBalance = { symbol: key, balance: Big(value), price: Big(0), value: Big(0) };
+    zaboCoins.push(key);
+    blockfiBalances.push(obj);
+  }
+  zaboBalances.set('blockfi', blockfiBalances);
+
+  return { zaboBalances, zaboCoins };
+}
+
 export async function getUserPortfolio(userId: string) {
 
   const { walletBalances, walletCoins } = await getWalletsPortfolio(userId);
-  console.log(`walletCoins: ${JSON.stringify(walletCoins)}`)
+  debug(`walletCoins: ${JSON.stringify(walletCoins)}`)
   const { elrondBalances, elrondCoins } = await getElrondPortfolio(userId);
-  console.log(`elrondCoins: ${JSON.stringify(elrondCoins)}`)
+  debug(`elrondCoins: ${JSON.stringify(elrondCoins)}`)
   const { cexBalances, cexCoins } = await getCexesPortfolio(userId);
-  console.log(`cexCoins: ${JSON.stringify(cexCoins)}`)
+  debug(`cexCoins: ${JSON.stringify(cexCoins)}`)
+  const { zaboBalances, zaboCoins } = await getZaboPortfolio(userId);
+  debug(`zaboCoins: ${JSON.stringify(zaboCoins)}`)
 
-  const allBalances: Map<string, Array<iBalance>> = new Map([...walletBalances, ...elrondBalances, ...cexBalances]);
-  let portfolioCoins: Array<string> = [...walletCoins, ...elrondCoins, ...cexCoins];
-  console.log(`portfolioCoins: ${JSON.stringify(portfolioCoins)}`)
+  const allBalances: Map<string, Array<iBalance>> = new Map([...walletBalances, ...elrondBalances, ...cexBalances, ...zaboBalances]);
+  let portfolioCoins: Array<string> = [...walletCoins, ...elrondCoins, ...cexCoins, ...zaboCoins];
+  debug(`portfolioCoins: ${JSON.stringify(portfolioCoins)}`)
   portfolioCoins = portfolioCoins.filter((item, index) => {
     return portfolioCoins.indexOf(item) === index;
   });
 
-  console.log(`portfolioCoins: ${JSON.stringify(portfolioCoins)}`)
+  debug(`unique portfolioCoins: ${JSON.stringify(portfolioCoins)}`)
 
   const geckoPrices = await gecko.getSimplePrice(portfolioCoins, ['usd', 'eur']);
   // TODO: UGLY HACK START
@@ -131,7 +152,7 @@ export async function getUserPortfolio(userId: string) {
   // TODO: UGLY HACK END
 
   let totalInUsd: Big = Big(0);
-  console.log('********************** BALANCES **********************');
+  logger.warn('********************** BALANCES **********************');
   for (const [address, balances] of allBalances.entries()) {
     for (const balance of balances) {
       const currencyPrices = geckoPrices.get(balance.symbol);
