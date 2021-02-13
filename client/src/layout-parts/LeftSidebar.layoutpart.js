@@ -10,9 +10,14 @@ class LeftSidebarLayoutPart extends React.Component {
       <>
         <Row className='left-sidebar-1'>
           <Col>
+          <Row className='mt-1'>
+              <Col>
+                <Button className="btn-ls" block color="success" tag={Link} to='rates'>Rates</Button>
+              </Col>
+            </Row>
             <Row className='mt-1'>
               <Col>
-                <Button className="btn-ls" block color="success" tag={Link} to='data-source'>Select data source</Button>
+                <Button className="btn-ls" block color="success" tag={Link} to='portfolio'>Portfolio</Button>
               </Col>
             </Row>
           </Col>

@@ -16,6 +16,7 @@ import Big from 'big.js'
 import { logger } from '../logger'
 import Debug from 'debug'
 const debug = Debug('portfolio')
+import Keyv from 'keyv'
 
 const erc20TokenAddresses: Map<string, string> = new Map();
 erc20TokenAddresses.set('USDC', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
@@ -25,6 +26,9 @@ erc20TokenAddresses.set('BUSD', '0x4fabb145d64652a948d72533023f6e7a623c7c53');
 interface iBalance {
   symbol: string, balance: Big, price: Big, value: Big
 }
+
+let keyvPortfolio = new Keyv('sqlite://mydatabase.sqlite', { serialize: JSON.stringify, deserialize: JSON.parse, namespace: 'portfolio' });
+keyvPortfolio.on('error', (err: any) => logger.error('Connection Error', err));
 
 async function getWalletsPortfolio(userId: string) {
   const walletCoins: Array<string> = [];
@@ -124,7 +128,7 @@ async function getZaboPortfolio(userId: string) {
   return { zaboBalances, zaboCoins };
 }
 
-export async function getUserPortfolio(userId: string) {
+export async function saveUserPortfolio(userId: string) {
 
   const { walletBalances, walletCoins } = await getWalletsPortfolio(userId);
   debug(`walletCoins: ${JSON.stringify(walletCoins)}`)
@@ -168,4 +172,7 @@ export async function getUserPortfolio(userId: string) {
     logger.info(`${address} balances: ${JSON.stringify(balances)}`);
     logger.info(`Total in USD: ${totalInUsd.toString()}`);
   }
+
+  await keyvPortfolio.set(userId, Array.from(allBalances));
+  logger.info(`Portfolio saved...`);
 }

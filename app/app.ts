@@ -60,8 +60,6 @@ let init = async () => {
 
   await gecko.init();
   logger.info(`Coingecko init`);
-
-  portfolio.getUserPortfolio('myliveuser');
 }
 
 app.listen(port, () => {
@@ -73,6 +71,7 @@ let updatePricesTask = () => {
 }
 
 let updatePortfolioTask = () => {
+  portfolio.saveUserPortfolio('myliveuser');
   setTimeout(updatePortfolioTask, 60 * ONE_MINUTE); // every hour
 }
 
@@ -83,7 +82,9 @@ let startCyclicTasks = () => {
   updatePortfolioTask();
 }
 
-init();
-startCyclicTasks();
+(async () => {
+  await init();
+  await startCyclicTasks();
+})();
 
 //TODO: integrate crypto hodler!!!

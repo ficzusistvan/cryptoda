@@ -1,7 +1,7 @@
 import { React, useCallback, useRef, useState } from 'react'
 import { Row, Col } from 'reactstrap'
 import axios from 'axios'
-import ListingsTable from '../components/listingTable'
+import ListingsTable from '../components/ratesTable'
 
 export default function RatesComponent() {
 
