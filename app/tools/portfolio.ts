@@ -17,6 +17,7 @@ import { logger } from '../logger'
 import Debug from 'debug'
 const debug = Debug('portfolio')
 import Keyv from 'keyv'
+import * as db from '../db'
 
 const erc20TokenAddresses: Map<string, string> = new Map();
 erc20TokenAddresses.set('USDC', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
@@ -174,5 +175,6 @@ export async function saveUserPortfolio(userId: string) {
   }
 
   await keyvPortfolio.set(userId, Array.from(allBalances));
+  await db.savePortfolio(userId, allBalances);
   logger.info(`Portfolio saved...`);
 }
