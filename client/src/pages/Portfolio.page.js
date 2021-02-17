@@ -60,6 +60,8 @@ export default function Portfolio() {
     zabo.current.connect({ provider: 'blockFi' }).onConnection(async (account) => {
       const respZaboUser = await axios.post('api/zabo/create-zabo-user', { userId: THIS_USER, account: account });
       console.log('Created user: ', respZaboUser.data);
+      const forcePortfolioUpdateResp = await axios.post('/api/portfolio', {});
+      console.log('Portfolio update run');
     }).onError(error => {
       console.error('account connection error:', error)
     })

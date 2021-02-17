@@ -16,7 +16,6 @@ import Big from 'big.js'
 import { logger } from '../logger'
 import Debug from 'debug'
 const debug = Debug('portfolio')
-import Keyv from 'keyv'
 import * as db from '../db'
 
 const erc20TokenAddresses: Map<string, string> = new Map();
@@ -27,9 +26,6 @@ erc20TokenAddresses.set('BUSD', '0x4fabb145d64652a948d72533023f6e7a623c7c53');
 interface iBalance {
   symbol: string, balance: Big, price: Big, value: Big
 }
-
-let keyvPortfolio = new Keyv('sqlite://mydatabase.sqlite', { serialize: JSON.stringify, deserialize: JSON.parse, namespace: 'portfolio' });
-keyvPortfolio.on('error', (err: any) => logger.error('Connection Error', err));
 
 async function getWalletsPortfolio(userId: string) {
   const walletCoins: Array<string> = [];
@@ -119,7 +115,10 @@ async function getZaboPortfolio(userId: string) {
 
   const blockfiBalance = await zabo.getBlockFiBalance(userId);
   const blockfiBalances: Array<iBalance> = [];
-  for (const [key, value] of (Object as any).entries(blockfiBalance)) {
+  for (let [key, value] of (Object as any).entries(blockfiBalance)) {
+    if (key === 'BTC' || key === 'btc') {
+      value = value - config.blockfi.btc_amount_to_subtract;
+    }
     let obj: iBalance = { symbol: key, balance: Big(value), price: Big(0), value: Big(0) };
     zaboCoins.push(key);
     blockfiBalances.push(obj);
@@ -174,7 +173,6 @@ export async function saveUserPortfolio(userId: string) {
     logger.info(`Total in USD: ${totalInUsd.toString()}`);
   }
 
-  await keyvPortfolio.set(userId, Array.from(allBalances));
   await db.savePortfolio(userId, allBalances);
   logger.info(`Portfolio saved...`);
 }

@@ -10,6 +10,15 @@ function savePortfolio(userId: string, balances: Map<string, any /*Array<iBalanc
   });
 }
 
+function getPortfolio(userId: string) {
+  const stmt = db.prepare(`SELECT portfolio FROM portfolio WHERE user_id = :user_id ORDER BY timestamp DESC LIMIT 1`);
+  const res = stmt.get({
+    user_id: userId
+  });
+  return JSON.parse(res.portfolio);
+}
+
 export {
-  savePortfolio
+  savePortfolio,
+  getPortfolio
 }
