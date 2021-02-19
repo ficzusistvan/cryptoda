@@ -151,7 +151,7 @@ export async function saveUserPortfolio(userId: string) {
   const geckoPrices = await gecko.getSimplePrice(portfolioCoins, ['usd', 'eur']);
   // TODO: UGLY HACK START
   const usdclpPrice = new Map();
-  usdclpPrice.set('usd', USDCLP_PRICE);
+  usdclpPrice.set('usd', await waves.getUSDCLPPrice());
   geckoPrices.set('USDCLP', usdclpPrice);
   // TODO: UGLY HACK END
 
