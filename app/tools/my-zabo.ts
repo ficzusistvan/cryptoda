@@ -1,13 +1,10 @@
 import Zabo from 'zabo-sdk-js';
-import Keyv from 'keyv';
 import { logger } from '../logger'
+import * as db from '../db'
 
 let zabo: any;
-let keyv: any;
 
 export async function init(apiKey: string, secret: string, env: string) {
-  keyv = new Keyv('sqlite://mydatabase.sqlite', { serialize: JSON.stringify, deserialize: JSON.parse });
-  keyv.on('error', (err: any) => logger.error('Connection Error', err));
   try {
     zabo = await Zabo.init({
       apiKey: apiKey,
@@ -19,20 +16,20 @@ export async function init(apiKey: string, secret: string, env: string) {
   }
 }
 
-export async function getZaboUser(userId: string) {
-  return await keyv.get(userId);
+export function getZaboUser(userId: string) {
+  return db.getZaboUser(userId);
 }
 
 export async function createZaboUser(userId: string, account: any) {
   let user = await zabo.users.create(account);
   // store the user
-  await keyv.set(userId, user);
+  db.setZaboUser(userId, user);
 }
 
 export async function getBlockFiBalance(userId: string) {
   let balances: any = {};
   // retrieve user
-  const myZaboUserObject: any = await keyv.get(userId);
+  const myZaboUserObject: any = db.getZaboUser(userId);
   let zaboBalances: any;
   try {
     zaboBalances = await zabo.users.getBalances({

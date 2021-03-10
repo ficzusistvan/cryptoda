@@ -12,19 +12,4 @@ router.get('/', async function (req, res, next) {
   res.json(balances);
 });
 
-router.post('/', async function (req, res, next) {
-  await portfolio.saveUserPortfolio('myliveuser');
-  res.json(true);
-});
-
-router.get('/investment', async function(req, res, next) {
-  const investments = await db.getInvestments('myliveuser');
-  res.json(investments);
-});
-
-router.post('/investment', async function(req, res, next) {
-  await db.saveInvestment('myliveuser', req.body);
-  res.json(true);
-});
-
 export = router;

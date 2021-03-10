@@ -1,5 +1,5 @@
 import axios from 'axios';
-import config from './config.json'
+import config from '../config.json'
 
 export async function getListings(start: number, limit: number, convert: string) {
   const response = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest',

@@ -17,6 +17,11 @@ class LeftSidebarLayoutPart extends React.Component {
             </Row>
             <Row className='mt-1'>
               <Col>
+                <Button className="btn-ls" block color="success" tag={Link} to='investments'>Investments</Button>
+              </Col>
+            </Row>
+            <Row className='mt-1'>
+              <Col>
                 <Button className="btn-ls" block color="success" tag={Link} to='portfolio'>Portfolio</Button>
               </Col>
             </Row>

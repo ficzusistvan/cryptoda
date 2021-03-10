@@ -1,6 +1,6 @@
 import express from 'express'
 let router: express.Router = express.Router();
-import { getListings } from "../../cmc";
+import { getListings } from "../../tools/cmc";
 import * as gecko from '../../tools/coingecko'
 
 router.get('/', async (req, res) => {

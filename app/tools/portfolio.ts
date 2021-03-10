@@ -3,7 +3,6 @@ import config from '../config.json'
 const MY_ETH_ADDRESSES: Array<string> = config.eths;
 const MY_ELROND_ADDRESSES: Array<string> = config.elronds;
 const MY_WAVES_ADDRESSES: Array<string> = config.waves;
-const USDCLP_PRICE = config.waves_exchange.usdclp_price;
 // TODO: remove this END
 import * as ethers from '../wallet/ethers'
 import * as elrond from '../wallet/elrond'
