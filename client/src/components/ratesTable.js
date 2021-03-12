@@ -1,41 +1,12 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTable, usePagination } from 'react-table'
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import NumberFormat from 'react-number-format';
 
 // Create a default prop getter
 const defaultPropGetter = () => ({})
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
-
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    border: "1px solid rgba(224, 224, 224, 1)",
-  },
-  body: {
-    fontSize: 12,
-    border: "1px solid rgba(224, 224, 224, 1)",
-  },
-  sizeSmall: {
-    padding: "8px 5px 8px 5px",
-  },
-}))(TableCell);
-
 export default function ListingTable({ data, fetchData, loading, pageCount: controlledPageCount, getCellProps = defaultPropGetter }) {
-
-  const classes = useStyles();
 
   const columns = React.useMemo(
     () => [
@@ -118,14 +89,7 @@ export default function ListingTable({ data, fetchData, loading, pageCount: cont
         Cell: ({ row }) => {
           return <NumberFormat value={row.values['quote.USD.percent_change_7d']} displayType={'text'} thousandSeparator={true} prefix={'%'} decimalScale={2} />
         },
-      },
-      {
-        Header: 'Tags',
-        accessor: 'tags',
-        Cell: ({ row }) => {
-          return <span>{row.values.tags.join(', ')}</span>
-        },
-      },
+      }
     ],
     []
   )
@@ -184,46 +148,40 @@ export default function ListingTable({ data, fetchData, loading, pageCount: cont
           )}
         </code>
           </pre>*/}
-      <TableContainer component={Paper}>
-        <Table {...getTableProps()} className={classes.table} size="small">
-          <TableHead>
+      <div>
+        <table {...getTableProps()} className="table table-hover" size="small">
+          <thead>
             {headerGroups.map(headerGroup => (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
+              <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => (
-                  <StyledTableCell {...column.getHeaderProps()}>{column.render('Header')}</StyledTableCell>
+                  <th scope="col" {...column.getHeaderProps()}>{column.render('Header')}</th>
                 ))}
-              </TableRow>
+              </tr>
             ))}
-          </TableHead>
-          <TableBody {...getTableBodyProps()}>
+          </thead>
+          <tbody {...getTableBodyProps()}>
             {rows.map((row, i) => {
               prepareRow(row)
               return (
-                <TableRow {...row.getRowProps()}>
+                <tr className="table-primary" {...row.getRowProps()}>
                   {row.cells.map(cell => {
-                    return <StyledTableCell {...cell.getCellProps([
+                    return <td {...cell.getCellProps([
                       {
-                        className: cell.column.className,
-                        style:
-                          cell.column.id === 'symbol' ? {
-                            fontWeight: `bold`,
-                          } : cell.column.id === 'quote.USD.price' ? {
-                            fontWeight: `bold`
-                          } : cell.column.id === 'quote.USD.percent_change_1h' ? {
-                            backgroundColor: cell.value >= 0 ? `hsl(135, 100%, 50%)` : `hsl(15, 100%, 50%)`
-                          } : cell.column.id === 'quote.USD.percent_change_24h' ? {
-                            backgroundColor: cell.value >= 0 ? `hsl(135, 100%, 50%)` : `hsl(15, 100%, 50%)`
-                          } : cell.column.id === 'quote.USD.percent_change_7d' ? {
-                            backgroundColor: cell.value >= 0 ? `hsl(135, 100%, 50%)` : `hsl(15, 100%, 50%)`
-                          } : cell.column.style
+                        className: 
+                          cell.column.id === 'symbol' ? "text-info"
+                         : cell.column.id === 'quote.USD.price' ? "text-info"
+                         : cell.column.id === 'quote.USD.percent_change_1h' ? cell.value >= 0 ? "text-success" : "text-danger"
+                         : cell.column.id === 'quote.USD.percent_change_24h' ? cell.value >= 0 ? "text-success" : "text-danger"
+                         : cell.column.id === 'quote.USD.percent_change_7d' ? cell.value >= 0 ? "text-success" : "text-danger"
+                         : cell.column.className
                       },
                       getCellProps(cell),
-                    ])}>{cell.render('Cell')}</StyledTableCell>
+                    ])}>{cell.render('Cell')}</td>
                   })}
-                </TableRow>
+                </tr>
               )
             })}
-            <TableRow>
+            <tr>
               {loading ? (
                 // Use our custom loading state to show a loading indicator
                 <td colSpan="10000">Loading...</td>
@@ -233,10 +191,10 @@ export default function ListingTable({ data, fetchData, loading, pageCount: cont
                 results
                   </td>
                 )}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div className="pagination">
         <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {'<<'}

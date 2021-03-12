@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
+    "bootswatch": "^4.6.0",
     "firebase": "^8.1.1",
     "firebaseui": "^4.7.1",
     "react": "^17.0.1",

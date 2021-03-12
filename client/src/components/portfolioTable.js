@@ -1,42 +1,26 @@
 import React from 'react'
 import { useTable } from 'react-table'
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import NumberFormat from 'react-number-format';
 
 // Create a default prop getter
 const defaultPropGetter = () => ({})
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
+const TEXT_COLORS = [
+  //"text-muted",
+  //"text-primary",
+  "text-secondary",
+  "text-warning",
+  "text-danger",
+  "text-success",
+  "text-info"
+];
 
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    border: "1px solid rgba(224, 224, 224, 1)",
-    fontWeight: "bold"
-  },
-  body: {
-    fontSize: 12,
-    border: "1px solid rgba(224, 224, 224, 1)",
-    width: "20%"
-  },
-  sizeSmall: {
-    padding: "8px 5px 8px 5px",
-  },
-}))(TableCell);
+let walletColors = new Map();
+let symbolColors = new Map();
+let walletIdx = 0;
+let symbolIdx = 0;
 
 export default function PortfolioTable({ data, loading, getCellProps = defaultPropGetter }) {
-
-  const classes = useStyles();
 
   const columns = React.useMemo(
     () => [
@@ -88,52 +72,62 @@ export default function PortfolioTable({ data, loading, getCellProps = defaultPr
   // Render the UI for your table
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table {...getTableProps()} className={classes.table} size="small">
-          <TableHead>
+      <div>
+        <table {...getTableProps()} className="table table-hover" size="small">
+          <thead>
             {headerGroups.map(headerGroup => (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
+              <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => (
-                  <StyledTableCell {...column.getHeaderProps()}>{column.render('Header')}</StyledTableCell>
+                  <th scope="col" {...column.getHeaderProps()}>{column.render('Header')}</th>
                 ))}
-              </TableRow>
+              </tr>
             ))}
-          </TableHead>
-          <TableBody {...getTableBodyProps()}>
+          </thead>
+          <tbody {...getTableBodyProps()}>
             {rows.map((row, i) => {
               prepareRow(row)
               return (
-                <TableRow {...row.getRowProps()}>
+                <tr className="table-primary" {...row.getRowProps()}>
                   {row.cells.map(cell => {
-                    return <StyledTableCell {...cell.getCellProps([
+                    return <td {...cell.getCellProps([
                       {
-                        className: cell.column.className,
-                        style:
-                          cell.column.id === 'wallet' ? {
-                            fontWeight: `bold`,
-                            fontSize: '16px',
-                          } : cell.column.id === 'symbol' ? {
-                            fontWeight: `bold`,
-                          } : cell.column.id === 'value' ? {
-                            fontWeight: `bold`,
-                            backgroundColor: `hsl(50, 50%, 50%)`
-                          } : cell.column.style
+                        className:
+                          cell.column.id === 'wallet' ? (() => {
+                            if (!walletColors.has(cell.value)) {
+                              walletColors.set(cell.value, TEXT_COLORS[walletIdx++])
+                              if (walletIdx > TEXT_COLORS.length - 1) {
+                                walletIdx = 0;
+                              }
+                            }
+                            return walletColors.get(cell.value);
+                          })()
+                            : cell.column.id === 'symbol' ? (() => {
+                              if (!symbolColors.has(cell.value)) {
+                                symbolColors.set(cell.value, TEXT_COLORS[symbolIdx++])
+                                if (symbolIdx > TEXT_COLORS.length - 1) {
+                                  symbolIdx = 0;
+                                }
+                              }
+                              return symbolColors.get(cell.value);
+                            })()
+                              : cell.column.id === 'value' ? "text-success"
+                                : cell.column.className
                       },
                       getCellProps(cell),
-                    ])}>{cell.render('Cell')}</StyledTableCell>
+                    ])}>{cell.render('Cell')}</td>
                   })}
-                </TableRow>
+                </tr>
               )
             })}
-            <TableRow>
+            <tr>
               {loading && (
                 // Use our custom loading state to show a loading indicator
                 <td colSpan="10000">Loading...</td>
               )}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </>
   )
 }
