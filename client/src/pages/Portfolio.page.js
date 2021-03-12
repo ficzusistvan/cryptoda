@@ -44,13 +44,13 @@ export default function Portfolio() {
       // TODO: fix this, now zabo user is recreated every time the button is clicked
       //const respUserExists = await axios.get(`api/zabo/zabo-user-exists?userId=${THIS_USER}`);
       //if (!respUserExists.data) {
-        console.log('init zabo')
-        zabo.current = await Zabo.init({
-          //clientId: config.zabo.sandbox.clientId,
-          //env: 'sandbox'
-          clientId: config.zabo.live.clientId,
-          env: 'live'
-        });
+      console.log('init zabo')
+      zabo.current = await Zabo.init({
+        //clientId: config.zabo.sandbox.clientId,
+        //env: 'sandbox'
+        clientId: config.zabo.live.clientId,
+        env: 'live'
+      });
       //}
     }
     getData();
@@ -76,16 +76,17 @@ export default function Portfolio() {
       </Row>
       <Row>
         <Col>
+          <div class="alert alert-success">
+            Total balance: <strong><NumberFormat value={total} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} /></strong>
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
           <Button color="primary" onClick={zaboConnectToProvider}>Connect to Zabo for BlockFi access</Button>
         </Col>
       </Row>
       <PortfolioTable data={portfolio} loading={loading} />
-      <Row>
-        <Col>
-          <span>Total balance: </span>
-          <NumberFormat value={total} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />
-        </Col>
-      </Row>
     </>
   )
 }

@@ -49,6 +49,19 @@ export default function Investments() {
 
   return (
     <>
+      <Row>
+        <Col>
+          <h1>Investments</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <div class="alert alert-success">
+            Total invested: <strong><NumberFormat value={total} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} /></strong>
+          </div>
+        </Col>
+      </Row>
+      <InvestmentsTable data={investments} loading={loading} />
       <Jumbotron>
         <Form>
           <FormGroup>
@@ -70,18 +83,6 @@ export default function Investments() {
           <Button onClick={addInvestment}>Add investment</Button>
         </Form>
       </Jumbotron>
-      <Row>
-        <Col>
-          <h1>Investments</h1>
-        </Col>
-      </Row>
-      <InvestmentsTable data={investments} loading={loading} />
-      <Row>
-        <Col>
-          <span>Total invested: </span>
-          <NumberFormat value={total} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />
-        </Col>
-      </Row>
     </>
   )
 }
