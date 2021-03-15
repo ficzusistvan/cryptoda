@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTable, usePagination } from 'react-table'
 import NumberFormat from 'react-number-format';
+import { Progress } from 'reactstrap';
 
 // Create a default prop getter
 const defaultPropGetter = () => ({})
@@ -167,13 +168,13 @@ export default function ListingTable({ data, fetchData, loading, pageCount: cont
                   {row.cells.map(cell => {
                     return <td {...cell.getCellProps([
                       {
-                        className: 
+                        className:
                           cell.column.id === 'symbol' ? "text-info"
-                         : cell.column.id === 'quote.USD.price' ? "text-info"
-                         : cell.column.id === 'quote.USD.percent_change_1h' ? cell.value >= 0 ? "text-success" : "text-danger"
-                         : cell.column.id === 'quote.USD.percent_change_24h' ? cell.value >= 0 ? "text-success" : "text-danger"
-                         : cell.column.id === 'quote.USD.percent_change_7d' ? cell.value >= 0 ? "text-success" : "text-danger"
-                         : cell.column.className
+                            : cell.column.id === 'quote.USD.price' ? "text-info"
+                              : cell.column.id === 'quote.USD.percent_change_1h' ? cell.value >= 0 ? "text-success" : "text-danger"
+                                : cell.column.id === 'quote.USD.percent_change_24h' ? cell.value >= 0 ? "text-success" : "text-danger"
+                                  : cell.column.id === 'quote.USD.percent_change_7d' ? cell.value >= 0 ? "text-success" : "text-danger"
+                                    : cell.column.className
                       },
                       getCellProps(cell),
                     ])}>{cell.render('Cell')}</td>
@@ -186,59 +187,54 @@ export default function ListingTable({ data, fetchData, loading, pageCount: cont
                 // Use our custom loading state to show a loading indicator
                 <td colSpan="10000">Loading...</td>
               ) : (
-                  <td colSpan="10000">
-                    Showing {page.length} of ~{controlledPageCount * pageSize}{' '}
+                <td colSpan="10000">
+                  Showing {page.length} of ~{controlledPageCount * pageSize}{' '}
                 results
-                  </td>
-                )}
+                </td>
+              )}
             </tr>
           </tbody>
         </table>
       </div>
-      <div className="pagination">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </button>{' '}
-        <span>
-          Page{' '}
+      <div>
+        <div className="text-center">Page{' '}
           <strong>
             {pageIndex + 1} of {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <span>
-          | Go to page:{' '}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0
-              gotoPage(page)
-            }}
-            style={{ width: '100px' }}
-          />
-        </span>{' '}
-        <select
-          value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value))
-          }}
-        >
-          {[10, 20, 30, 40, 50].map(pageSize => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
+          </strong></div>
+        <Progress min={0} value={pageIndex + 1} max={pageOptions.length} />
       </div>
+
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{`<<`}</button>
+        <button type="button" class="btn btn-secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>{`<`}</button>
+        <button type="button" class="btn btn-secondary" onClick={() => nextPage()} disabled={!canNextPage}>{`>`}</button>
+        <button type="button" class="btn btn-secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{`>>`}</button>
+      </div>
+      <span>
+        {' '}| Go to page:{' '}
+        <input
+          type="number"
+          defaultValue={pageIndex + 1}
+          onChange={e => {
+            const page = e.target.value ? Number(e.target.value) - 1 : 0
+            gotoPage(page)
+          }}
+          style={{ width: '100px' }}
+        />
+      </span>{' '}
+      <select
+        value={pageSize}
+        onChange={e => {
+          setPageSize(Number(e.target.value))
+        }}
+      >
+        {[10, 20, 30, 40, 50].map(pageSize => (
+          <option key={pageSize} value={pageSize}>
+            Show {pageSize}
+          </option>
+        ))}
+      </select>
+
     </>
   )
 }

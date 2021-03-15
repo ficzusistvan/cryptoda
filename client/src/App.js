@@ -1,18 +1,20 @@
 import React from 'react';
-import MainLayoutPart from './layout-parts/Main.layoutpart';
-import { Container, Row, Col } from 'reactstrap';
 import LeftSidebarRedux from './redux/containers/test.redux';
-import LeftSidebarLayoutPart from './layout-parts/LeftSidebar.layoutpart';
+import { Container, Row, Col } from 'reactstrap';
+import Main from './layout-parts/Main';
+import Navigation from './layout-parts/Navigation';
+import ContextMenu from './layout-parts/ContextMenu';
 
 const App = () => (
   <div>
+    <Navigation />
     <Container fluid={true} >
       <Row>
         <Col sm="2">
-          <LeftSidebarLayoutPart />
+          <ContextMenu />
         </Col>
         <Col sm="10">
-          <MainLayoutPart />
+          <Main />
         </Col>
       </Row>
     </Container>
