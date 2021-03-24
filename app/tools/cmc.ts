@@ -5,7 +5,7 @@ export async function getListings(start: number, limit: number, convert: string)
   const response = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest',
     {
       headers: {
-        'X-CMC_PRO_API_KEY': config.CMC_PRO_API_KEY
+        'X-CMC_PRO_API_KEY': config.coin_market_cap.api_key
       },
       params: {
         'start': start,
@@ -21,7 +21,7 @@ export async function getInfo(symbol: string) {
   const response = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/info',
     {
       headers: {
-        'X-CMC_PRO_API_KEY': config.CMC_PRO_API_KEY
+        'X-CMC_PRO_API_KEY': config.coin_market_cap.api_key
       },
       params: {
         'symbol': symbol
@@ -35,7 +35,7 @@ export async function getGlobalMetrics() {
   const response = await axios.get('https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest',
     {
       headers: {
-        'X-CMC_PRO_API_KEY': config.CMC_PRO_API_KEY
+        'X-CMC_PRO_API_KEY': config.coin_market_cap.api_key
       }
     }
   )

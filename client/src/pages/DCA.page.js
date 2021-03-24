@@ -9,7 +9,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import BalancerTable from "../components/balancerTable";
 
-export default function Balancer() {
+export default function DCA() {
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
 

@@ -8,6 +8,7 @@ import RatesPage from '../pages/Rates.page';
 import PortfolioPage from '../pages/Portfolio.page';
 import InvestmentsPage from '../pages/Investments.page';
 import BalancerPage from '../pages/Balancer.page';
+import DCAPage from '../pages/DCA.page';
 
 const Main = () => (
   <Row className='main'>
@@ -18,6 +19,7 @@ const Main = () => (
         <Route exact path='/portfolio' component={PortfolioPage} />
         <Route exact path='/investments' component={InvestmentsPage} />
         <Route exact path='/balancer' component={BalancerPage} />
+        <Route exact path='/dca' component={DCAPage} />
       </Switch>
     </Col>
   </Row>

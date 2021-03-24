@@ -129,7 +129,7 @@ export const computeBalances = async () => {
     }
     const quantityToBuy = amountToSpend.div(currentPrice);
     logger.info(`Manually buy ${entry.name} quantity[${quantityToBuy}] price[${formatter.format(currentPrice.toNumber())}]`);
-    buys.push({ name: entry.name, quantityToBuy: quantityToBuy, currentPrice: currentPrice.toNumber() });
+    buys.push({ name: entry.name, quantityToBuy: quantityToBuy, currentPrice: currentPrice.toNumber(), percent: entry.percent });
   }
   return buys;
 }

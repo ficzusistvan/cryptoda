@@ -34,6 +34,9 @@ const Navigation = (props) => {
             <NavItem>
               <NavLink tag={Link} to='balancer'>Balancer</NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink tag={Link} to='dca'>DCA</NavLink>
+            </NavItem>
           </Nav>
         </Collapse>
       </Navbar>
