@@ -1,9 +1,10 @@
-import * as ethers from '../wallet/ethers'
-import * as elrond from '../wallet/elrond'
+import * as ethers from '../providers/dex/ethers'
+import * as elrond from '../providers/cex/elrond'
 import * as gecko from '../tools/coingecko'
-import * as binance from '../cex/binance'
-import * as celsius from '../cex/celsius'
-import * as waves from '../cex/waves'
+import * as binance from '../providers/cex/binance'
+import * as celsius from '../providers/cex/celsius'
+import * as coinbase from '../providers/cex/coinbase';
+import * as waves from '../providers/cex/waves'
 import * as zabo from './my-zabo'
 import Big from 'big.js'
 import { logger } from '../logger'
@@ -67,6 +68,7 @@ async function getWavesBalances(address: string) {
 async function getBinanceBalances(apiKey: string, apiSecret: string) {
   const coins: Array<string> = [];
   const balances: Array<iBalance> = [];
+  await binance.init(apiKey, apiSecret);
   const binanceBalance = await binance.getBalance();
   for (const [key, value] of (Object as any).entries(binanceBalance)) {
     balances.push({ symbol: key, balance: Big(value) });
@@ -75,11 +77,24 @@ async function getBinanceBalances(apiKey: string, apiSecret: string) {
   return { balances, coins };
 }
 
-async function getCelsiusBalances(apiKey: string, apiSecret: string) {
+async function getCelsiusBalances(apiKey: string, partnerKey: string) {
   const coins: Array<string> = [];
   const balances: Array<iBalance> = [];
+  await celsius.init(partnerKey, apiKey);
   const celsiusBalance = await celsius.getBalance();
   for (const [key, value] of (Object as any).entries(celsiusBalance)) {
+    balances.push({ symbol: (key as string).toUpperCase(), balance: Big(value) });
+    coins.push((key as string).toUpperCase());
+  }
+  return { balances, coins };
+}
+
+async function getCoinbaseBalances(apiKey: string, secretKey: string) {
+  const coins: Array<string> = [];
+  const balances: Array<iBalance> = [];
+  await coinbase.init(apiKey, secretKey);
+  const coinbaseBalance = await coinbase.getBalance();
+  for (const [key, value] of (Object as any).entries(coinbaseBalance)) {
     balances.push({ symbol: (key as string).toUpperCase(), balance: Big(value) });
     coins.push((key as string).toUpperCase());
   }
@@ -150,6 +165,12 @@ export async function updateUserWallets(userId: string) {
         res = await getCelsiusBalances(wallet.api_key, wallet.secret_key);
         debug(`celsiusCoins: ${JSON.stringify(res.coins)}`)
         debug(`celsiusBalances: ${JSON.stringify(res.balances)}`)
+        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        break;
+      case 'Coinbase':
+        res = await getCoinbaseBalances(wallet.api_key, wallet.secret_key);
+        debug(`coinbaseCoins: ${JSON.stringify(res.coins)}`)
+        debug(`coinbaseBalances: ${JSON.stringify(res.balances)}`)
         await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
         break;
       case 'Ethereum':

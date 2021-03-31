@@ -10,14 +10,63 @@ interface iCoinsListEntry {
   name: string
 }
 let coinsList: Array<iCoinsListEntry>;
+let prices: Map<string, Map<string, Big>> = new Map();
 
 export async function init() {
   coinsList = await getCoinsList();
 }
 
+function replacer(key: any, value: any) {
+  if(value instanceof Map) {
+    return {
+      dataType: 'Map',
+      value: Array.from(value.entries()), // or with spread: value: [...value]
+    };
+  } else {
+    return value;
+  }
+} // Used for debugging
+
 async function getCoinsList() {
   const resp = await axios.get(URL + `coins/list`);
   return resp.data;
+}
+
+export async function cacheSimplePrice(vs_currencies: Array<string>) {
+  const coinIds: Array<string> = coinsList.map((coin: iCoinsListEntry) => {
+    return coin.id;
+  });
+  const coinIdsChunks: Array<Array<string>> = coinIds.reduce((resultArray: Array<Array<string>>, item: string, index: number) => {
+    const chunkIndex: number = Math.floor(index / 500);
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = [] // start a new chunk
+    }
+    resultArray[chunkIndex].push(item)
+    return resultArray;
+  }, []);
+  let requests = [];
+  for (const coinIdsChunk of coinIdsChunks) {
+    const request = axios.get(URL + `simple/price?ids=${coinIdsChunk.join(',')}&vs_currencies=${vs_currencies.join(',')}`);
+    requests.push(request);
+  }
+  Promise.all(requests).then((responses) => {
+    debug(`Responses length ${responses.length}`);
+    for (const response of responses) {
+      for (const [coinId, simplePrices] of (Object as any).entries(response.data)) {
+        const coinsListEntry = coinsList.find((entry: iCoinsListEntry) => {
+          return entry.id === coinId;
+        })
+        if (coinsListEntry) {
+          let currencyPrices = new Map();
+          for (const [currency, price] of (Object as any).entries(simplePrices)) {
+            currencyPrices.set(currency, Big(price));
+          }
+          prices.set(coinsListEntry.symbol, currencyPrices);
+        }
+      }
+    }
+    debug(`Prices ${JSON.stringify(prices, replacer)}`);
+  });
 }
 
 export async function getSimplePrice(symbols: Array<string>, vs_currencies: Array<string>) {

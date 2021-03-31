@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Debug from 'debug';
 const debug = Debug('elrond');
-import { logger } from '../logger'
+import { logger } from '../../logger'
 
 export async function getBalance(address: string) {
   try {
