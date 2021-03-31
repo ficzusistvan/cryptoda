@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useMemo } from "react"
 import { Row, Col, Button } from 'reactstrap'
 import Zabo from 'zabo-sdk-js'
 import config from '../config.json'
@@ -8,7 +8,8 @@ import NumberFormat from 'react-number-format';
 
 export default function Portfolio() {
   const [portfolio, setPortfolio] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [totalInUsd, setTotalInUsd] = useState(0);
+  const [totalInEur, setTotalInEur] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const THIS_USER = 'myliveuser';
@@ -21,18 +22,15 @@ export default function Portfolio() {
     setLoading(true);
     const getData = async () => {
       const resp = await axios.get('api/portfolio');
-      let portf = [], tot = 0;
+      let totInUsd = 0;
+      let totInEur = 0;
       for (const entity of resp.data) {
-        const wallet = entity[0];
-        let balances = entity[1];
-        for (let balance of Object.values(balances)) {
-          balance['wallet'] = wallet;
-          portf.push(balance);
-          tot += Number(balance.value);
-        }
+        totInUsd += Number(entity.value_in_USD);
+        totInEur += Number(entity.value_in_EUR);
       }
-      setPortfolio(portf);
-      setTotal(tot);
+      setPortfolio(resp.data);
+      setTotalInUsd(totInUsd);
+      setTotalInEur(totInEur);
     }
     getData();
     setLoading(false);
@@ -77,7 +75,8 @@ export default function Portfolio() {
       <Row>
         <Col>
           <div class="alert alert-success">
-            Total balance: <strong><NumberFormat value={total} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} /></strong>
+            <p>Total balance in USD: <strong><NumberFormat value={totalInUsd} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} /></strong></p>
+            <p>Total balance in Euro: <strong><NumberFormat value={totalInEur} displayType={'text'} thousandSeparator={true} suffix={' EUR'} decimalScale={2} /></strong></p>
           </div>
         </Col>
       </Row>

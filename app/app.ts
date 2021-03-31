@@ -70,16 +70,23 @@ let updatePricesTask = () => {
   setTimeout(updatePricesTask, 1 * ONE_MINUTE); // every minute
 }
 
-let updatePortfolioTask = () => {
-  portfolio.saveUserPortfolio('myliveuser');
-  setTimeout(updatePortfolioTask, 60 * ONE_MINUTE); // every hour
+let updateUserWalletsTask = () => {
+  portfolio.updateUserWallets('myliveuser');
+  setTimeout(updateUserWalletsTask, 60 * ONE_MINUTE); // every hour
+}
+
+let createUserWalletsSnapshotTask = () => {
+  portfolio.createUserWalletsSnapshot('myliveuser');
+  setTimeout(createUserWalletsSnapshotTask, 60 * ONE_MINUTE); // every hour
 }
 
 let startCyclicTasks = () => {
   // save current crypto prices
   updatePricesTask();
-  // save current portfolio
-  updatePortfolioTask();
+  // update user wallets
+  updateUserWalletsTask();
+  // save user wallets snapshot
+  createUserWalletsSnapshotTask();
 }
 
 (async () => {

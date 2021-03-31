@@ -6,7 +6,11 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink
+  NavLink,
+  DropdownItem,
+  DropdownMenu,
+  UncontrolledDropdown,
+  DropdownToggle
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
@@ -25,9 +29,19 @@ const Navigation = (props) => {
             <NavItem>
               <NavLink tag={Link} to='rates'>Rates</NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to='portfolio'>Portfolio</NavLink>
-            </NavItem>
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Portfolio
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem tag={Link} to='portfolio'>
+                  Current
+                </DropdownItem>
+                <DropdownItem tag={Link} to='portfolio-history'>
+                  History
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
             <NavItem>
               <NavLink tag={Link} to='investments'>Investments</NavLink>
             </NavItem>
@@ -36,6 +50,9 @@ const Navigation = (props) => {
             </NavItem>
             <NavItem>
               <NavLink tag={Link} to='dca'>DCA</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={Link} to='wallets-config'>Wallets config</NavLink>
             </NavItem>
           </Nav>
         </Collapse>

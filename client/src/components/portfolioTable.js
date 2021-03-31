@@ -26,7 +26,7 @@ export default function PortfolioTable({ data, loading, getCellProps = defaultPr
     () => [
       {
         Header: 'Wallet',
-        accessor: 'wallet'
+        accessor: 'type'
       },
       {
         Header: 'Symbol',
@@ -41,16 +41,30 @@ export default function PortfolioTable({ data, loading, getCellProps = defaultPr
       },
       {
         Header: 'Price in USD',
-        accessor: 'price',
+        accessor: 'price_in_USD',
         Cell: ({ row }) => {
-          return <NumberFormat value={row.values['price']} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />
+          return <NumberFormat value={row.values['price_in_USD']} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />
         },
       },
       {
         Header: 'Value in USD',
-        accessor: 'value',
+        accessor: 'value_in_USD',
         Cell: ({ row }) => {
-          return <NumberFormat value={row.values['value']} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />
+          return <NumberFormat value={row.values['value_in_USD']} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />
+        },
+      },
+      {
+        Header: 'Price in EUR',
+        accessor: 'price_in_EUR',
+        Cell: ({ row }) => {
+          return <NumberFormat value={row.values['price_in_EUR']} displayType={'text'} thousandSeparator={true} suffix={' EUR'} decimalScale={2} />
+        },
+      },
+      {
+        Header: 'Value in EUR',
+        accessor: 'value_in_EUR',
+        Cell: ({ row }) => {
+          return <NumberFormat value={row.values['value_in_EUR']} displayType={'text'} thousandSeparator={true} suffix={' EUR'} decimalScale={2} />
         },
       },
     ],
@@ -92,7 +106,7 @@ export default function PortfolioTable({ data, loading, getCellProps = defaultPr
                     return <td {...cell.getCellProps([
                       {
                         className:
-                          cell.column.id === 'wallet' ? (() => {
+                          cell.column.id === 'type' ? (() => {
                             if (!walletColors.has(cell.value)) {
                               walletColors.set(cell.value, TEXT_COLORS[walletIdx++])
                               if (walletIdx > TEXT_COLORS.length - 1) {
@@ -110,8 +124,9 @@ export default function PortfolioTable({ data, loading, getCellProps = defaultPr
                               }
                               return symbolColors.get(cell.value);
                             })()
-                              : cell.column.id === 'value' ? "text-success"
-                                : cell.column.className
+                              : cell.column.id === 'value_in_USD' ? "text-success"
+                                : cell.column.id === 'value_in_EUR' ? "text-success"
+                                  : cell.column.className
                       },
                       getCellProps(cell),
                     ])}>{cell.render('Cell')}</td>

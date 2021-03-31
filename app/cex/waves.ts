@@ -19,11 +19,21 @@ export async function getBalance(address: string) {
 const USDCLP_WAVES_ID = 'CrjhbC9gRezwvBZ1XwPQqRwx4BWzoyMHGFNUVdn22ep6';
 const USDC_WAVES_ID = '6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ';
 
-export async function getUSDCLPPrice() {
+export async function getUSDCLPPriceInUsd() {
   const usdclpPriceResp = await axios.get(`https://wavescap.com/api/asset/${USDCLP_WAVES_ID}.json`);
   const usdcPriceResp = await axios.get(`https://wavescap.com/api/asset/${USDC_WAVES_ID}.json`);
 
   const usdclpPrice = usdclpPriceResp.data.data.lastPrice_waves / usdcPriceResp.data.data.lastPrice_waves;
+  debug(`Calculated usdclpPrice: ${usdclpPrice}`);
+  return usdclpPrice;
+}
+
+export async function getUSDCLPPriceInEur() {
+  const usdclpPriceResp = await axios.get(`https://wavescap.com/api/asset/${USDCLP_WAVES_ID}.json`);
+  const usdcPriceResp = await axios.get(`https://wavescap.com/api/asset/${USDC_WAVES_ID}.json`);
+
+  // TODO: fix this!
+  const usdclpPrice = usdclpPriceResp.data.data.lastPrice_waves / usdcPriceResp.data.data.lastPrice_waves * 0.85;
   debug(`Calculated usdclpPrice: ${usdclpPrice}`);
   return usdclpPrice;
 }

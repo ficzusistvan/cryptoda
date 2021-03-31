@@ -5,10 +5,12 @@ import balancerRouter from './balancer';
 import portfolioRouter from "./portfolio";
 import ratesRouter from "./rates";
 import zaboRouter from './zabo';
+import walletRouter from './wallets';
 
 router.use("/balancer", balancerRouter);
 router.use("/portfolio", portfolioRouter);
 router.use("/rates", ratesRouter);
 router.use("/zabo", zaboRouter);
+router.use("/wallet", walletRouter);
 
 export = router;

@@ -7,14 +7,15 @@ import * as portfolio from '../../tools/portfolio'
 import * as db from '../../db'
 
 router.get('/', async function (req, res, next) {
-  const balances = await db.getPortfolio('myliveuser');
+  const balances = await portfolio.getPortfolio('myliveuser');
   debug(`returning: ${JSON.stringify(balances)}`);
   res.json(balances);
 });
 
-router.post('/', async function (req, res, next) {
-  await portfolio.saveUserPortfolio('myliveuser');
-  res.json(true);
+router.get('/history', async function (req, res, next) {
+  const history = await portfolio.getPortfolioHistory('myliveuser');
+  debug(`returning: ${JSON.stringify(history)}`);
+  res.json(history);
 });
 
 router.get('/investment', async function(req, res, next) {
