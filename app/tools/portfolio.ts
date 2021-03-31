@@ -121,7 +121,7 @@ async function getZaboBalances(apiKey: string, apiSecret: string) {
 }
 
 async function updateWalletBalancesInDb(walletId: number, coins: Array<string>, balances: Array<iBalance>) {
-  const prices: Map<string, Map<string, Big>> = await gecko.getSimplePrice(coins, ['usd', 'eur']);
+  const prices: Map<string, Map<string, Big>> = await gecko.getCachedPrices();
   const lastUpdated = Date.now();
   for (const balance of balances) {
     let symbolPrices = prices.get(balance.symbol);

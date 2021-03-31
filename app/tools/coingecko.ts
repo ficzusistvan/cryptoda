@@ -106,3 +106,7 @@ export async function getSimplePrice(symbols: Array<string>, vs_currencies: Arra
   debug(`Coingecko prices: ${JSON.stringify(Array.from(prices))}`)
   return prices;
 }
+
+export async function getCachedPrices() {
+  return prices;
+}
