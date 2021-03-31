@@ -2,7 +2,7 @@ import axios from "axios";
 import { React, useEffect, useState } from "react"
 import { Form, FormGroup, Label, Input, Row, Col, Button, Jumbotron } from 'reactstrap'
 import NumberFormat from 'react-number-format';
-import WalletsTable from '../components/WalletsTable';
+import WalletsTable from '../components/wallets.table';
 
 import "react-datepicker/dist/react-datepicker.css";
 

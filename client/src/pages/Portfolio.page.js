@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useMemo } from "react"
 import { Row, Col, Button } from 'reactstrap'
 import Zabo from 'zabo-sdk-js'
 import config from '../config.json'
-import PortfolioTable from '../components/portfolioTable'
+import PortfolioTable from '../components/portfolio.table'
 import NumberFormat from 'react-number-format';
 
 export default function Portfolio() {

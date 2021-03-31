@@ -2,14 +2,14 @@ import axios from "axios";
 import { useEffect, useState } from "react"
 import { Form, FormGroup, Label, Input, Row, Col, Button, Jumbotron } from 'reactstrap'
 //import config from '../config.json'
-import InvestmentsTable from '../components/investmentsTable'
+import InvestmentsTable from '../components/investments.table'
 import NumberFormat from 'react-number-format';
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
-import BalancerTable from "../components/balancerTable";
+import BalancerTable from "../components/balancer.table";
 
-export default function Balancer() {
+export default function DCAConfig() {
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
 

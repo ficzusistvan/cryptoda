@@ -8,8 +8,7 @@ import RatesPage from '../pages/Rates.page';
 import PortfolioPage from '../pages/Portfolio.page';
 import PortfolioHistoryPage from '../pages/PortfolioHistory.page';
 import InvestmentsPage from '../pages/Investments.page';
-import BalancerPage from '../pages/Balancer.page';
-import DCAPage from '../pages/DCA.page';
+import DCAConfigPage from '../pages/DCAConfig.page';
 import WalletsConfigPage from '../pages/WalletsConfig.page';
 
 const Main = () => (
@@ -21,8 +20,7 @@ const Main = () => (
         <Route exact path='/portfolio' component={PortfolioPage} />
         <Route exact path='/portfolio-history' component={PortfolioHistoryPage} />
         <Route exact path='/investments' component={InvestmentsPage} />
-        <Route exact path='/balancer' component={BalancerPage} />
-        <Route exact path='/dca' component={DCAPage} />
+        <Route exact path='/dca-config' component={DCAConfigPage} />
         <Route exact path='/wallets-config' component={WalletsConfigPage} />
       </Switch>
     </Col>

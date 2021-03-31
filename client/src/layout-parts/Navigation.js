@@ -29,6 +29,9 @@ const Navigation = (props) => {
             <NavItem>
               <NavLink tag={Link} to='rates'>Rates</NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink tag={Link} to='investments'>Investments</NavLink>
+            </NavItem>
             <UncontrolledDropdown nav inNavbar>
               <DropdownToggle nav caret>
                 Portfolio
@@ -42,18 +45,19 @@ const Navigation = (props) => {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
-            <NavItem>
-              <NavLink tag={Link} to='investments'>Investments</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to='balancer'>Balancer</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to='dca'>DCA</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to='wallets-config'>Wallets config</NavLink>
-            </NavItem>
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Config
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem tag={Link} to='dca-config'>
+                  DCA
+                </DropdownItem>
+                <DropdownItem tag={Link} to='wallets-config'>
+                  Wallets
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
           </Nav>
         </Collapse>
       </Navbar>

@@ -1,7 +1,7 @@
 import { React, useCallback, useRef, useState } from 'react'
 import { Row, Col } from 'reactstrap'
 import axios from 'axios'
-import ListingsTable from '../components/ratesTable'
+import RatesTable from '../components/rates.table'
 
 export default function RatesComponent() {
 
@@ -33,7 +33,7 @@ export default function RatesComponent() {
       </Row>
       <Row>
         <Col>
-          <ListingsTable data={listingsData} fetchData={fetchData} loading={loading} pageCount={pageCount} />
+          <RatesTable data={listingsData} fetchData={fetchData} loading={loading} pageCount={pageCount} />
         </Col>
       </Row>
     </>
