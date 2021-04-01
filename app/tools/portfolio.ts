@@ -120,11 +120,22 @@ async function getZaboBalances(apiKey: string, apiSecret: string) {
   return { zaboBalances, zaboCoins };
 }
 
+function replacer(key: any, value: any) {
+  if(value instanceof Map) {
+    return {
+      dataType: 'Map',
+      value: Array.from(value.entries()), // or with spread: value: [...value]
+    };
+  } else {
+    return value;
+  }
+} // Used for debugging
+
 async function updateWalletBalancesInDb(walletId: number, coins: Array<string>, balances: Array<iBalance>) {
   const prices: Map<string, Map<string, Big>> = await gecko.getCachedPrices();
   const lastUpdated = Date.now();
   for (const balance of balances) {
-    let symbolPrices = prices.get(balance.symbol);
+    let symbolPrices = prices.get(balance.symbol.toLowerCase());
     // TODO: UGLY HACK START
     if (balance.symbol === 'USDCLP') {
       symbolPrices = new Map();
