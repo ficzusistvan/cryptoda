@@ -29,13 +29,14 @@ export default function Investments() {
     console.log(`useEffect 1 called...`);
     setLoading(true);
     const getData = async () => {
-      const resp1 = await axios.get('https://api.exchangeratesapi.io/latest?symbols=USD,EUR,RON&base=USD');
+      const resp1 = await axios.get('http://api.exchangeratesapi.io/latest?symbols=USD,EUR,RON&access_key=17881812858dd74e212685251cfffebf');
+      console.log(resp1.data);
       const rates = resp1.data.rates;
       const resp2 = await axios.get('api/portfolio/investment');
       let invs = [], tot = 0;
       for (const entity of resp2.data) {
         let inv = entity;
-        let rate = rates[entity.currency];
+        let rate = rates[entity.currency] / rates['USD'];
         inv['inUSD'] = Number(entity.amount) / rate;
         invs.push(inv)
         tot += inv['inUSD'];
