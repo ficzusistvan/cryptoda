@@ -2,7 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from "path";
 import routes from './routes'
-import * as ethers from './providers/dex/ethers'
+import * as ethereum from './providers/dex/ethereum'
+import * as bsc from './providers/dex/bsc'
 import * as zabo from './tools/my-zabo';
 import * as gecko from './tools/coingecko'
 import config from './config.json'
@@ -36,8 +37,11 @@ app.use(routes);
     .reduce((res: any, key: any) => (res[key] = obj[key], res), {});
 
 let init = async () => {
-  await ethers.init(INFURA_PROJECT_ID, INFURA_PROJECT_SECRET);
-  logger.info(`Ethers init`);
+  await ethereum.init(INFURA_PROJECT_ID, INFURA_PROJECT_SECRET);
+  logger.info(`Ethereum init`);
+
+  await bsc.init(INFURA_PROJECT_ID, INFURA_PROJECT_SECRET);
+  logger.info(`BSC init`);
 
   //await zabo.init(ZABO_SANDBOX_API_KEY, ZABO_SANDBOX_SECRET_KEY, 'sandbox');
   await zabo.init(ZABO_LIVE_API_KEY, ZABO_LIVE_SECRET_KEY, 'live');

@@ -101,6 +101,13 @@ function getInvestments(userId: string) {
   return res;
 }
 
+function getDcaConfig(userId: string) {
+  const stmt = db.prepare(`SELECT * FROM dca WHERE user_id = :user_id`);
+  const dca = stmt.get({
+    user_id: userId
+  });
+}
+
 export {
   getWallets,
   insertOrUpdateWalletBalances,
@@ -112,5 +119,6 @@ export {
   getZaboUser,
   setZaboUser,
   saveInvestment,
-  getInvestments
+  getInvestments,
+  getDcaConfig
 }

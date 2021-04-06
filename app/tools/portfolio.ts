@@ -1,4 +1,5 @@
-import * as ethers from '../providers/dex/ethers'
+import * as ethereum from '../providers/dex/ethereum'
+import * as bsc from '../providers/dex/bsc'
 import * as elrond from '../providers/cex/elrond'
 import * as gecko from '../tools/coingecko'
 import * as binance from '../providers/cex/binance'
@@ -17,12 +18,16 @@ erc20TokenAddresses.set('USDC', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
 erc20TokenAddresses.set('aUSDC', '0xbcca60bb61934080951369a648fb03df4f96263c');
 erc20TokenAddresses.set('BUSD', '0x4fabb145d64652a948d72533023f6e7a623c7c53');
 
+const bep20TokenAddresses: Map<string, string> = new Map();
+bep20TokenAddresses.set('Cake', '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82');
+bep20TokenAddresses.set('Cake-LP', '0xa527a61703d82139f8a06bc30097cc9caa2df5a6');
+
 interface iBalance { symbol: string, balance: Big }
 
 async function getEthereumBalances(address: string) {
   const coins: Array<string> = [];
   const balances: Array<iBalance> = [];
-  const ethBalance = await ethers.getBalance(address);
+  const ethBalance = await ethereum.getBalance(address);
   if (Number(ethBalance) > 0) {
     coins.push('ETH');
     if (Big(ethBalance).gt(0)) {
@@ -30,7 +35,29 @@ async function getEthereumBalances(address: string) {
     }
   }
   for (const [key, value] of erc20TokenAddresses.entries()) {
-    const tokenBalance = await ethers.getERC20TokenBalance(value, address);
+    const tokenBalance = await ethereum.getERC20TokenBalance(value, address);
+    if (Number(tokenBalance) > 0) {
+      coins.push(key);
+      if (Big(tokenBalance).gt(0)) {
+        balances.push({ symbol: key, balance: Big(tokenBalance) });
+      }
+    }
+  }
+  return { balances, coins };
+}
+
+async function getBscBalances(address: string) {
+  const coins: Array<string> = [];
+  const balances: Array<iBalance> = [];
+  const bscBalance = await bsc.getBalance(address);
+  if (Number(bscBalance) > 0) {
+    coins.push('BNB');
+    if (Big(bscBalance).gt(0)) {
+      balances.push({ symbol: 'BNB', balance: Big(bscBalance) });
+    }
+  }
+  for (const [key, value] of bep20TokenAddresses.entries()) {
+    const tokenBalance = await bsc.getERC20TokenBalance(value, address);
     if (Number(tokenBalance) > 0) {
       coins.push(key);
       if (Big(tokenBalance).gt(0)) {
@@ -121,7 +148,7 @@ async function getZaboBalances(apiKey: string, apiSecret: string) {
 }
 
 function replacer(key: any, value: any) {
-  if(value instanceof Map) {
+  if (value instanceof Map) {
     return {
       dataType: 'Map',
       value: Array.from(value.entries()), // or with spread: value: [...value]
@@ -188,6 +215,12 @@ export async function updateUserWallets(userId: string) {
         res = await getEthereumBalances(wallet.address);
         debug(`ethereumCoins: ${JSON.stringify(res.coins)}`)
         debug(`ethereumBalances: ${JSON.stringify(res.balances)}`)
+        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        break;
+      case 'BSC':
+        res = await getBscBalances(wallet.address);
+        debug(`BSCCoins: ${JSON.stringify(res.coins)}`)
+        debug(`BSCBalances: ${JSON.stringify(res.balances)}`)
         await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
         break;
       case 'Elrond':
