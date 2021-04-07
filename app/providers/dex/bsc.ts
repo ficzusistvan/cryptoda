@@ -47,7 +47,7 @@ const contractAbiFragment = `[
   }
 ]`;
 
-export async function getERC20TokenBalance(tokenAddress: string, address: string) {
+export async function getBEP20TokenBalance(tokenAddress: string, address: string) {
   const contract = new Contract(tokenAddress, contractAbiFragment, provider);
   const balance = await contract.balanceOf(address);
   const decimals = await contract.decimals();

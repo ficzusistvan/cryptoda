@@ -57,7 +57,7 @@ async function getBscBalances(address: string) {
     }
   }
   for (const [key, value] of bep20TokenAddresses.entries()) {
-    const tokenBalance = await bsc.getERC20TokenBalance(value, address);
+    const tokenBalance = await bsc.getBEP20TokenBalance(value, address);
     if (Number(tokenBalance) > 0) {
       coins.push(key);
       if (Big(tokenBalance).gt(0)) {

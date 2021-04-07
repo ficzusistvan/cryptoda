@@ -20,6 +20,7 @@
     "celsius-sdk": "^0.10.15",
     "cheerio": "^1.0.0-rc.5",
     "cheerio-tableparser": "^1.0.1",
+    "cron-parser": "^3.3.0",
     "debug": "^4.3.1",
     "ethers": "^5.0.29",
     "express": "^4.17.1",

@@ -102,10 +102,11 @@ function getInvestments(userId: string) {
 }
 
 function getDcaConfig(userId: string) {
-  const stmt = db.prepare(`SELECT * FROM dca WHERE user_id = :user_id`);
-  const dca = stmt.get({
-    user_id: userId
-  });
+  let stmt = db.prepare(`SELECT dca.*, dca_strategy.id as dca_strategy_id, dca_strategy.strategy_to_use FROM dca LEFT JOIN dca_strategy ON dca.user_id = dca_strategy.user_id WHERE dca.user_id = :user_id`);
+  const dcaConfig = stmt.get({ user_id: userId });
+  stmt = db.prepare(`SELECT * FROM dca_strategy_entries WHERE dca_strategy_id = :id`);
+  const entries = stmt.all({ id: dcaConfig.dca_strategy_id });
+  return { dcaConfig, entries };
 }
 
 export {

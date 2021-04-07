@@ -47,11 +47,11 @@ const Navigation = (props) => {
             </UncontrolledDropdown>
             <UncontrolledDropdown nav inNavbar>
               <DropdownToggle nav caret>
-                Config
+                Configs
               </DropdownToggle>
               <DropdownMenu right>
                 <DropdownItem tag={Link} to='dca-config'>
-                  DCA
+                  Fiat Currency Cost Averaging
                 </DropdownItem>
                 <DropdownItem tag={Link} to='wallets-config'>
                   Wallets

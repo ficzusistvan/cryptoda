@@ -1,10 +1,13 @@
 // GENERAL DEPENDENCIES
 import Big from 'big.js'
 import axios from 'axios'
+import parser from 'cron-parser'
 
 // BOT DEPENDENCIES
 import { logger } from '../logger'
 import config from '../config.json'
+import * as db from '../db'
+import * as binance from '../providers/cex/binance'
 
 // CONSTANTS
 const CMC_PRO_API_KEY = config.coin_market_cap.api_key;
@@ -132,4 +135,34 @@ export const computeBalances = async () => {
     buys.push({ name: entry.name, quantityToBuy: quantityToBuy, currentPrice: currentPrice.toNumber(), percent: entry.percent });
   }
   return buys;
+}
+
+const ONE_MINUTE = 60 * 1000;
+
+export async function runDCA(userId: string) {
+  logger.info(`runDCA ${userId} started...`);
+  const { dcaConfig, entries } = await db.getDcaConfig(userId);
+  if (dcaConfig.is_enabled === 0) {
+    logger.info(`DCA disabled for user[${userId}]`);
+  } else {
+    logger.info(`Running DCA strategy[${dcaConfig.strategy_to_use}] for user[${userId}]`);
+    const interval = parser.parseExpression(dcaConfig.buying_frequency);
+    const diff = interval.next().getTime() - new Date().getTime();
+    if (diff < ONE_MINUTE) {
+      switch (dcaConfig.exchange_to_use) {
+        case 'binance':
+          for (const entry of entries) {
+            const symbol = `${entry.currency.toUpperCase()}/${dcaConfig.currency_to_spend.toUpperCase()}`;
+            const amount = dcaConfig.amount_to_spend * entry.percent / 100;
+            binance.buyAsset(symbol, amount);
+          }
+          break;
+        default:
+          logger.warn(`Exchange[${dcaConfig.exchange_to_use}] NOT supported for DCA`);
+      }
+    } else {
+      logger.debug(`Skipping DCA for user[${userId}]...`);
+    }
+  }
+  logger.info(`runDCA ${userId} ended!`);
 }

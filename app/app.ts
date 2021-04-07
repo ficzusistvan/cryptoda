@@ -8,7 +8,7 @@ import * as zabo from './tools/my-zabo';
 import * as gecko from './tools/coingecko'
 import config from './config.json'
 import * as portfolio from './tools/portfolio'
-import Big from 'big.js'
+import * as dca from './tools/dca'
 import { logger } from './logger'
 
 const ONE_MINUTE = 60 * 1000;
@@ -18,6 +18,11 @@ const ZABO_SANDBOX_API_KEY = config.zabo.api_key.sandbox;
 const ZABO_SANDBOX_SECRET_KEY = config.zabo.secret_key.sandbox;
 const ZABO_LIVE_API_KEY = config.zabo.api_key.live;
 const ZABO_LIVE_SECRET_KEY = config.zabo.secret_key.live;
+const IS_updatePricesTask_ENABLED = true;
+const IS_updateUserWalletsTask_ENABLED = true;
+const IS_createUserWalletsSnapshotTask_ENABLED = true;
+const IS_runDCATask_ENABLED = false;
+
 
 // rest of the code remains same
 const app = express();
@@ -72,13 +77,20 @@ let createUserWalletsSnapshotTask = () => {
   setTimeout(createUserWalletsSnapshotTask, 60 * ONE_MINUTE); // every hour
 }
 
+let runDCATask = () => {
+  dca.runDCA('myliveuser');
+  setTimeout(runDCATask, 1 * ONE_MINUTE); // every minute
+}
+
 let startCyclicTasks = () => {
   // save current crypto prices
-  updatePricesTask();
+  IS_updatePricesTask_ENABLED && updatePricesTask();
   // update user wallets
-  updateUserWalletsTask();
+  IS_updateUserWalletsTask_ENABLED && updateUserWalletsTask();
   // save user wallets snapshot
-  createUserWalletsSnapshotTask();
+  IS_createUserWalletsSnapshotTask_ENABLED && createUserWalletsSnapshotTask();
+  // run DCA
+  IS_runDCATask_ENABLED && runDCATask();
 }
 
 (async () => {
