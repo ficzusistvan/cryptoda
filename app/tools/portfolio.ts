@@ -12,6 +12,8 @@ import { logger } from '../logger'
 import Debug from 'debug'
 const debug = Debug('portfolio')
 import * as db from '../db'
+import { getYieldWatch } from './yieldwatch'
+import * as i from '../interfaces'
 
 const erc20TokenAddresses: Map<string, string> = new Map();
 erc20TokenAddresses.set('USDC', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
@@ -22,14 +24,10 @@ const bep20TokenAddresses: Map<string, string> = new Map();
 bep20TokenAddresses.set('Cake', '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82');
 bep20TokenAddresses.set('Cake-LP', '0xa527a61703d82139f8a06bc30097cc9caa2df5a6');
 
-interface iBalance { symbol: string, balance: Big }
-
 async function getEthereumBalances(address: string) {
-  const coins: Array<string> = [];
-  const balances: Array<iBalance> = [];
+  const balances: Array<i.iBalance> = [];
   const ethBalance = await ethereum.getBalance(address);
   if (Number(ethBalance) > 0) {
-    coins.push('ETH');
     if (Big(ethBalance).gt(0)) {
       balances.push({ symbol: 'ETH', balance: Big(ethBalance) });
     }
@@ -37,21 +35,18 @@ async function getEthereumBalances(address: string) {
   for (const [key, value] of erc20TokenAddresses.entries()) {
     const tokenBalance = await ethereum.getERC20TokenBalance(value, address);
     if (Number(tokenBalance) > 0) {
-      coins.push(key);
       if (Big(tokenBalance).gt(0)) {
         balances.push({ symbol: key, balance: Big(tokenBalance) });
       }
     }
   }
-  return { balances, coins };
+  return balances;
 }
 
 async function getBscBalances(address: string) {
-  const coins: Array<string> = [];
-  const balances: Array<iBalance> = [];
+  const balances: Array<i.iBalance> = [];
   const bscBalance = await bsc.getBalance(address);
   if (Number(bscBalance) > 0) {
-    coins.push('BNB');
     if (Big(bscBalance).gt(0)) {
       balances.push({ symbol: 'BNB', balance: Big(bscBalance) });
     }
@@ -59,78 +54,66 @@ async function getBscBalances(address: string) {
   for (const [key, value] of bep20TokenAddresses.entries()) {
     const tokenBalance = await bsc.getBEP20TokenBalance(value, address);
     if (Number(tokenBalance) > 0) {
-      coins.push(key);
       if (Big(tokenBalance).gt(0)) {
         balances.push({ symbol: key, balance: Big(tokenBalance) });
       }
     }
   }
-  return { balances, coins };
+  return balances;
 }
 
 async function getElrondBalances(address: string) {
-  const coins: Array<string> = [];
-  const balances: Array<iBalance> = [];
+  const balances: Array<i.iBalance> = [];
   const egldBalance = await elrond.getBalance(address);
   if (Number(egldBalance) > 0) {
-    coins.push('EGLD');
     if (Big(egldBalance).gt(0)) {
       balances.push({ symbol: 'EGLD', balance: Big(egldBalance) });
     }
   }
-  return { balances, coins };
+  return balances;
 }
 
 async function getWavesBalances(address: string) {
-  const coins: Array<string> = [];
-  const balances: Array<iBalance> = [];
+  const balances: Array<i.iBalance> = [];
   const wavesBalance = await waves.getBalance(address);
   for (const [key, value] of (Object as any).entries(wavesBalance)) {
-    coins.push(key);
     balances.push({ symbol: key, balance: Big(value) });
   }
-  return { balances, coins };
+  return balances;
 }
 
 async function getBinanceBalances(apiKey: string, apiSecret: string) {
-  const coins: Array<string> = [];
-  const balances: Array<iBalance> = [];
+  const balances: Array<i.iBalance> = [];
   await binance.init(apiKey, apiSecret);
   const binanceBalance = await binance.getBalance();
   for (const [key, value] of (Object as any).entries(binanceBalance)) {
     balances.push({ symbol: key, balance: Big(value) });
-    coins.push(key);
   }
-  return { balances, coins };
+  return balances;
 }
 
 async function getCelsiusBalances(apiKey: string, partnerKey: string) {
-  const coins: Array<string> = [];
-  const balances: Array<iBalance> = [];
+  const balances: Array<i.iBalance> = [];
   await celsius.init(partnerKey, apiKey);
   const celsiusBalance = await celsius.getBalance();
   for (const [key, value] of (Object as any).entries(celsiusBalance)) {
     balances.push({ symbol: (key as string).toUpperCase(), balance: Big(value) });
-    coins.push((key as string).toUpperCase());
   }
-  return { balances, coins };
+  return balances;
 }
 
 async function getCoinbaseBalances(apiKey: string, secretKey: string) {
-  const coins: Array<string> = [];
-  const balances: Array<iBalance> = [];
+  const balances: Array<i.iBalance> = [];
   await coinbase.init(apiKey, secretKey);
   const coinbaseBalance = await coinbase.getBalance();
   for (const [key, value] of (Object as any).entries(coinbaseBalance)) {
     balances.push({ symbol: (key as string).toUpperCase(), balance: Big(value) });
-    coins.push((key as string).toUpperCase());
   }
-  return { balances, coins };
+  return balances;
 }
 
 async function getZaboBalances(apiKey: string, apiSecret: string) {
-  const zaboCoins: Array<string> = [];
-  const zaboBalances: Map<string, Array<iBalance>> = new Map();
+  const zaboBalances: Map<string, Array<i.iBalance>> = new Map();
 
   /*const blockfiBalance = await zabo.getBlockFiBalance(userId);
   const blockfiBalances: Array<iBalance> = [];
@@ -144,7 +127,7 @@ async function getZaboBalances(apiKey: string, apiSecret: string) {
   }
   zaboBalances.set('blockfi', blockfiBalances);
 */
-  return { zaboBalances, zaboCoins };
+  return zaboBalances;
 }
 
 function replacer(key: any, value: any) {
@@ -158,30 +141,36 @@ function replacer(key: any, value: any) {
   }
 } // Used for debugging
 
-async function updateWalletBalancesInDb(walletId: number, coins: Array<string>, balances: Array<iBalance>) {
+// TODO: handle usdValue and eurValue from balances
+async function updateWalletBalancesInDb(walletId: number, balances: Array<i.iBalance>) {
   const prices: Map<string, Map<string, Big>> = await gecko.getCachedPrices();
   const lastUpdated = Date.now();
   for (const balance of balances) {
-    let symbolPrices = prices.get(balance.symbol.toLowerCase());
-    // TODO: UGLY HACK START
-    if (balance.symbol === 'USDCLP') {
-      symbolPrices = new Map();
-      symbolPrices.set('usd', Big(await waves.getUSDCLPPriceInUsd()));
-      symbolPrices.set('eur', Big(await waves.getUSDCLPPriceInEur()));
-    }
-    // TODO: UGLY HACK END
-    if (symbolPrices) {
-      const usdPrice = symbolPrices.get('usd');
-      let usdValue = Big(0);
-      if (usdPrice) {
-        usdValue = balance.balance.mul(usdPrice);
+    logger.info(`updateWalletBalancesInDb for [${walletId}] balance[${JSON.stringify(balance)}]`);
+    if (balance.usdPrice && balance.eurPrice && balance.usdValue && balance.eurValue) {
+      db.insertOrUpdateWalletBalances(walletId, balance.symbol, balance.balance, lastUpdated, balance.usdPrice, balance.usdValue, balance.eurPrice, balance.eurValue);
+    } else {
+      let symbolPrices = prices.get(balance.symbol.toLowerCase());
+      // TODO: UGLY HACK START
+      if (balance.symbol === 'USDCLP') {
+        symbolPrices = new Map();
+        symbolPrices.set('usd', Big(await waves.getUSDCLPPriceInUsd()));
+        symbolPrices.set('eur', Big(await waves.getUSDCLPPriceInEur()));
       }
-      const eurPrice = symbolPrices.get('eur');
-      let eurValue = Big(0);
-      if (eurPrice) {
-        eurValue = balance.balance.mul(eurPrice);
+      // TODO: UGLY HACK END
+      if (symbolPrices) {
+        const usdPrice = symbolPrices.get('usd');
+        let usdValue = Big(0);
+        if (usdPrice) {
+          usdValue = balance.balance.mul(usdPrice);
+        }
+        const eurPrice = symbolPrices.get('eur');
+        let eurValue = Big(0);
+        if (eurPrice) {
+          eurValue = balance.balance.mul(eurPrice);
+        }
+        db.insertOrUpdateWalletBalances(walletId, balance.symbol, balance.balance, lastUpdated, usdPrice, usdValue, eurPrice, eurValue);
       }
-      db.insertOrUpdateWalletBalances(walletId, balance.symbol, balance.balance, lastUpdated, usdPrice, usdValue, eurPrice, eurValue);
     }
   }
   db.deleteOldWalletBalances(walletId, lastUpdated);
@@ -191,49 +180,47 @@ export async function updateUserWallets(userId: string) {
   logger.info(`updateUserWallets ${userId} started...`);
   const userWallets = db.getWallets(userId);
   for (const wallet of userWallets) {
-    let res: { coins: Array<string>, balances: Array<iBalance> };
+    let balances: Array<i.iBalance>;
     switch (wallet.type) {
       case 'Binance':
-        res = await getBinanceBalances(wallet.api_key, wallet.secret_key);
-        debug(`binanceCoins: ${JSON.stringify(res.coins)}`)
-        debug(`binanceBalances: ${JSON.stringify(res.balances)}`)
-        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        balances = await getBinanceBalances(wallet.api_key, wallet.secret_key);
+        debug(`binanceBalances: ${JSON.stringify(balances)}`)
+        await updateWalletBalancesInDb(wallet.id, balances);
         break;
       case 'Celsius':
-        res = await getCelsiusBalances(wallet.api_key, wallet.secret_key);
-        debug(`celsiusCoins: ${JSON.stringify(res.coins)}`)
-        debug(`celsiusBalances: ${JSON.stringify(res.balances)}`)
-        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        balances = await getCelsiusBalances(wallet.api_key, wallet.secret_key);
+        debug(`celsiusBalances: ${JSON.stringify(balances)}`)
+        await updateWalletBalancesInDb(wallet.id, balances);
         break;
       case 'Coinbase':
-        res = await getCoinbaseBalances(wallet.api_key, wallet.secret_key);
-        debug(`coinbaseCoins: ${JSON.stringify(res.coins)}`)
-        debug(`coinbaseBalances: ${JSON.stringify(res.balances)}`)
-        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        balances = await getCoinbaseBalances(wallet.api_key, wallet.secret_key);
+        debug(`coinbaseBalances: ${JSON.stringify(balances)}`)
+        await updateWalletBalancesInDb(wallet.id, balances);
         break;
       case 'Ethereum':
-        res = await getEthereumBalances(wallet.address);
-        debug(`ethereumCoins: ${JSON.stringify(res.coins)}`)
-        debug(`ethereumBalances: ${JSON.stringify(res.balances)}`)
-        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        balances = await getEthereumBalances(wallet.address);
+        debug(`ethereumBalances: ${JSON.stringify(balances)}`)
+        await updateWalletBalancesInDb(wallet.id, balances);
         break;
       case 'BSC':
-        res = await getBscBalances(wallet.address);
-        debug(`BSCCoins: ${JSON.stringify(res.coins)}`)
-        debug(`BSCBalances: ${JSON.stringify(res.balances)}`)
-        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        balances = await getBscBalances(wallet.address);
+        debug(`BSCBalances: ${JSON.stringify(balances)}`)
+        if (wallet.is_farming === 1) {
+          const farmingBalances = await getYieldWatch(wallet.address);
+          logger.info(`Adding farming balances to [${wallet.address}]...`);
+          balances = balances.concat(farmingBalances);
+        }
+        await updateWalletBalancesInDb(wallet.id, balances);
         break;
       case 'Elrond':
-        res = await getElrondBalances(wallet.address);
-        debug(`elrondCoins: ${JSON.stringify(res.coins)}`)
-        debug(`elrondBalances: ${JSON.stringify(res.balances)}`)
-        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        balances = await getElrondBalances(wallet.address);
+        debug(`elrondBalances: ${JSON.stringify(balances)}`)
+        await updateWalletBalancesInDb(wallet.id, balances);
         break;
       case 'Waves':
-        res = await getWavesBalances(wallet.address);
-        debug(`wavesCoins: ${JSON.stringify(res.coins)}`)
-        debug(`wavesBalances: ${JSON.stringify(res.balances)}`)
-        await updateWalletBalancesInDb(wallet.id, res.coins, res.balances);
+        balances = await getWavesBalances(wallet.address);
+        debug(`wavesBalances: ${JSON.stringify(balances)}`)
+        await updateWalletBalancesInDb(wallet.id, balances);
         break;
     }
   }
