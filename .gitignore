@@ -1,13 +1,6 @@
 node_modules
 build
 app/config.json
-app/app_bkp.ts
-app/bot_bkp.ts
-app/config.json_bkp
 mydatabase.sqlite
 cryptoda.db
 config.json
-app/bot.ts
-app/exchanges.ts
-app/interfaces.ts
-app/rest-api.ts
