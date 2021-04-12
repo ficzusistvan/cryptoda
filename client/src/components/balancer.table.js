@@ -24,7 +24,7 @@ export default function BalancerTable({ data, loading, getCellProps = defaultPro
     () => [
       {
         Header: 'Name',
-        accessor: 'name'
+        accessor: 'currency'
       },
       {
         Header: 'Quantity to buy',

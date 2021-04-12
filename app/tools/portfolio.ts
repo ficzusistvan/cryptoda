@@ -142,9 +142,8 @@ function replacer(key: any, value: any) {
 } // Used for debugging
 
 // TODO: handle usdValue and eurValue from balances
-async function updateWalletBalancesInDb(walletId: number, balances: Array<i.iBalance>) {
+async function updateWalletBalancesInDb(walletId: number, balances: Array<i.iBalance>, lastUpdated: number) {
   const prices: Map<string, Map<string, Big>> = await gecko.getCachedPrices();
-  const lastUpdated = Date.now();
   for (const balance of balances) {
     logger.info(`updateWalletBalancesInDb for [${walletId}] balance[${JSON.stringify(balance)}]`);
     if (balance.usdPrice && balance.eurPrice && balance.usdValue && balance.eurValue) {
@@ -179,28 +178,29 @@ async function updateWalletBalancesInDb(walletId: number, balances: Array<i.iBal
 export async function updateUserWallets(userId: string) {
   logger.info(`updateUserWallets ${userId} started...`);
   const userWallets = db.getWallets(userId);
+  const now = Date.now();
   for (const wallet of userWallets) {
     let balances: Array<i.iBalance>;
     switch (wallet.type) {
       case 'Binance':
         balances = await getBinanceBalances(wallet.api_key, wallet.secret_key);
         debug(`binanceBalances: ${JSON.stringify(balances)}`)
-        await updateWalletBalancesInDb(wallet.id, balances);
+        await updateWalletBalancesInDb(wallet.id, balances, now);
         break;
       case 'Celsius':
         balances = await getCelsiusBalances(wallet.api_key, wallet.secret_key);
         debug(`celsiusBalances: ${JSON.stringify(balances)}`)
-        await updateWalletBalancesInDb(wallet.id, balances);
+        await updateWalletBalancesInDb(wallet.id, balances, now);
         break;
       case 'Coinbase':
         balances = await getCoinbaseBalances(wallet.api_key, wallet.secret_key);
         debug(`coinbaseBalances: ${JSON.stringify(balances)}`)
-        await updateWalletBalancesInDb(wallet.id, balances);
+        await updateWalletBalancesInDb(wallet.id, balances, now);
         break;
       case 'Ethereum':
         balances = await getEthereumBalances(wallet.address);
         debug(`ethereumBalances: ${JSON.stringify(balances)}`)
-        await updateWalletBalancesInDb(wallet.id, balances);
+        await updateWalletBalancesInDb(wallet.id, balances, now);
         break;
       case 'BSC':
         balances = await getBscBalances(wallet.address);
@@ -210,17 +210,17 @@ export async function updateUserWallets(userId: string) {
           logger.info(`Adding farming balances to [${wallet.address}]...`);
           balances = balances.concat(farmingBalances);
         }
-        await updateWalletBalancesInDb(wallet.id, balances);
+        await updateWalletBalancesInDb(wallet.id, balances, now);
         break;
       case 'Elrond':
         balances = await getElrondBalances(wallet.address);
         debug(`elrondBalances: ${JSON.stringify(balances)}`)
-        await updateWalletBalancesInDb(wallet.id, balances);
+        await updateWalletBalancesInDb(wallet.id, balances, now);
         break;
       case 'Waves':
         balances = await getWavesBalances(wallet.address);
         debug(`wavesBalances: ${JSON.stringify(balances)}`)
-        await updateWalletBalancesInDb(wallet.id, balances);
+        await updateWalletBalancesInDb(wallet.id, balances, now);
         break;
     }
   }
@@ -230,6 +230,7 @@ export async function updateUserWallets(userId: string) {
 export function createUserWalletsSnapshot(userId: string) {
   logger.info(`createUserWalletsSnapshot ${userId} started...`);
   const walletsBalances = db.getWalletsBalances(userId);
+  debug(`walletsBalances: ${JSON.stringify(walletsBalances)}`);
   const timestamp = Date.now();
   for (const walletBalances of walletsBalances) {
     db.saveWalletBalancesSnapshot(walletBalances, timestamp);

@@ -166,3 +166,8 @@ export async function runDCA(userId: string) {
   }
   logger.info(`runDCA ${userId} ended!`);
 }
+
+export async function getConfig(userId: string) {
+  const { dcaConfig, entries } = await db.getDcaConfig(userId);
+  return { dcaConfig, entries };
+}

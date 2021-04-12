@@ -4,15 +4,18 @@ import { Form, FormGroup, Label, Input, Row, Col, Button, Jumbotron, Container }
 import BalancerTable from "../components/balancer.table";
 
 export default function DCAConfig() {
-  const [result, setResult] = useState([]);
+  const [config, setConfig] = useState({});
+  const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     console.log(`useEffect 1 called...`);
     setLoading(true);
     const getData = async () => {
-      const resp1 = await axios.get('api/balancer');
-      setResult(resp1.data);
+      const resp1 = await axios.get('api/dca/config');
+      console.log(resp1.data);
+      setConfig(resp1.data.dcaConfig);
+      setEntries(resp1.data.entries);
     }
     getData();
     setLoading(false);
@@ -28,38 +31,34 @@ export default function DCAConfig() {
       <Form>
         <h3>Configure bot</h3>
         <FormGroup check>
-          <Input type="checkbox" name="enable-bot-check" id="enable-bot-check" />
+          <Input type="checkbox" name="enable-bot-check" id="enable-bot-check" checked={config.is_enabled} />
           <Label for="enable-bot-check" check>Enable bot</Label>
         </FormGroup>
         <Row form>
           <Col md={3}>
             <FormGroup>
               <Label for="amount-to-spend">Amount to spend</Label>
-              <Input type="number" name="amount-to-spend" id="amount-to-spend" placeholder="100" />
+              <Input type="number" name="amount-to-spend" id="amount-to-spend" value={config.amount_to_spend} />
             </FormGroup>
           </Col>
           <Col md={3}>
             <FormGroup>
               <Label for="currency-to-spend">Currency to spend</Label>
-              <Input type="text" name="currency-to-spend" id="currency-to-spend" placeholder="EUR" />
+              <Input type="text" name="currency-to-spend" id="currency-to-spend" value={config.currency_to_spend} />
             </FormGroup>
           </Col>
           <Col md={3}>
             <FormGroup>
               <Label for="buying-frequency">Buying frequency</Label>
-              <Input type="select" name="select" id="buying-frequency">
-                <option value="1">Daily</option>
-                <option value="2">Weekly</option>
-                <option value="3">Monthly</option>
-              </Input>
+              <Input type="text" name="buying-frequency" id="buying-frequency" value={config.buying_frequency} />
             </FormGroup>
           </Col>
           <Col md={3}>
             <FormGroup>
               <Label for="exchange-to-use">Exchange to use</Label>
               <Input type="select" name="select" id="exchange-to-use">
-                <option value="1">Binance</option>
-                <option value="2">Coinbase</option>
+                <option value="binance" selected={config.exchange_to_use === 'binance'}>Binance</option>
+                <option value="coinbase" selected={config.exchange_to_use === 'coinbase'}>Coinbase</option>
               </Input>
             </FormGroup>
           </Col>
@@ -70,8 +69,8 @@ export default function DCAConfig() {
             <FormGroup>
               <Label for="strategy">Select strategy:</Label>
               <Input type="select" name="select" id="strategy">
-                <option value="1">Top 5 crypto by market cap</option>
-                <option value="2">Selected cryptos</option>
+                <option value="top 5 crypto by market cap" selected={config.strategy_to_use === 'top 5 crypto by market cap'}>Top 5 crypto by market cap</option>
+                <option value="selected cryptos" selected={config.strategy_to_use === 'selected cryptos'}>Selected cryptos</option>
               </Input>
             </FormGroup>
           </Col>
@@ -83,7 +82,7 @@ export default function DCAConfig() {
         </Row>
       </Form>
       <h4>Strategy current result:</h4>
-      <BalancerTable data={result} loading={loading} />
+      <BalancerTable data={entries} loading={loading} />
     </>
   )
 }
