@@ -23,6 +23,7 @@ erc20TokenAddresses.set('BUSD', '0x4fabb145d64652a948d72533023f6e7a623c7c53');
 const bep20TokenAddresses: Map<string, string> = new Map();
 bep20TokenAddresses.set('Cake', '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82');
 bep20TokenAddresses.set('Cake-LP', '0xa527a61703d82139f8a06bc30097cc9caa2df5a6');
+bep20TokenAddresses.set('SafeMoon', '0x8076c74c5e3f5852037f31ff0093eeb8c8add8d3');
 
 async function getEthereumBalances(address: string) {
   const balances: Array<i.iBalance> = [];
