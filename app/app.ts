@@ -55,7 +55,9 @@ app.use(helmet.contentSecurityPolicy({
     imgSrc: [
       "'self'",
       "data:",
-      "https://*.gravatar.com"
+      "https://*.auth0.com",
+      "https://*.gravatar.com",
+      "https://*.wp.com",
     ]
   },
 }));
