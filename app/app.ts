@@ -40,7 +40,17 @@ const port = process.env.PORT || 5000;
 // create application/json parser
 const jsonParser = bodyParser.json()
 
-app.use(helmet());
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: [
+      "'self'",
+      "https://dev-9z71xtiv.eu.auth0.com"],
+    connectSrc: [
+      "'self'",
+      "https://dev-9z71xtiv.eu.auth0.com"
+    ]
+  },
+}));
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
