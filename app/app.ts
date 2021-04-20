@@ -44,11 +44,17 @@ app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: [
       "'self'",
-      "https://*.auth0.com"],
+      "https://*.auth0.com"
+    ],
     connectSrc: [
       "'self'",
       "https://*.auth0.com",
       "https://*.gravatar.com",
+      "https://api.exchangeratesapi.io",
+    ],
+    imageSrc: [
+      "'self'",
+      "https://*.gravatar.com"
     ]
   },
 }));
