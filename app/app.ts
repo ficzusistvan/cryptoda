@@ -50,10 +50,11 @@ app.use(helmet.contentSecurityPolicy({
       "'self'",
       "https://*.auth0.com",
       "https://*.gravatar.com",
-      "https://api.exchangeratesapi.io",
+      "http://api.exchangeratesapi.io",
     ],
-    imageSrc: [
+    imgSrc: [
       "'self'",
+      "data:",
       "https://*.gravatar.com"
     ]
   },
