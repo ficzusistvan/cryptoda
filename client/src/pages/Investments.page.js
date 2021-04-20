@@ -5,6 +5,7 @@ import { Form, FormGroup, Label, Input, Row, Col, Button, Jumbotron } from 'reac
 import InvestmentsTable from '../components/investments.table'
 import NumberFormat from 'react-number-format';
 import DatePicker from "react-datepicker";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -17,6 +18,7 @@ export default function Investments() {
   const [to, setTo] = useState('binance');
   const [investmentDate, setInvestmentDate] = useState(new Date());
   const [addInvestmentResponse, setAddInvestmentResponse] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
 
   //const THIS_USER = 'myliveuser';
   //const THIS_USER = 'mysandboxuser';
@@ -32,7 +34,12 @@ export default function Investments() {
       const resp1 = await axios.get('http://api.exchangeratesapi.io/latest?symbols=USD,EUR,RON&access_key=17881812858dd74e212685251cfffebf');
       console.log(resp1.data);
       const rates = resp1.data.rates;
-      const resp2 = await axios.get('api/portfolio/investment');
+      const token = await getAccessTokenSilently();
+      const resp2 = await axios.get('api/portfolio/investment', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       let invs = [], tot = 0;
       for (const entity of resp2.data) {
         let inv = entity;

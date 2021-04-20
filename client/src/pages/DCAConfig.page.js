@@ -2,17 +2,24 @@ import axios from "axios";
 import { useEffect, useState } from "react"
 import { Form, FormGroup, Label, Input, Row, Col, Button, Jumbotron, Container } from 'reactstrap'
 import BalancerTable from "../components/balancer.table";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function DCAConfig() {
   const [config, setConfig] = useState({});
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     console.log(`useEffect 1 called...`);
     setLoading(true);
     const getData = async () => {
-      const resp1 = await axios.get('api/dca/config');
+      const token = await getAccessTokenSilently();
+      const resp1 = await axios.get('api/dca/config', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(resp1.data);
       setConfig(resp1.data.dcaConfig);
       setEntries(resp1.data.entries);

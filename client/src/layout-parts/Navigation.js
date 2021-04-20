@@ -13,6 +13,7 @@ import {
   DropdownToggle
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import AuthNav from "../components/auth-nav";
 
 const Navigation = (props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,6 +59,10 @@ const Navigation = (props) => {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
+            <NavItem>
+              <NavLink tag={Link} to='profile'>Profile</NavLink>
+            </NavItem>
+            <AuthNav />
           </Nav>
         </Collapse>
       </Navbar>

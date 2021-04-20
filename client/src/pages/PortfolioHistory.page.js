@@ -4,11 +4,13 @@ import { Row, Col } from 'reactstrap'
 import { Chart } from "react-charts";
 import ResizableBox from "../components/ResizableBox";
 import { LTTB } from 'downsample';
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Portfolio() {
   const [historyInUsd, setHistoryInUsd] = useState([]);
   const [historyInEur, setHistoryInEur] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
 
   const THIS_USER = 'myliveuser';
   //const THIS_USER = 'mysandboxuser';
@@ -17,7 +19,12 @@ export default function Portfolio() {
     console.log(`useEffect 1 called...`);
     setLoading(true);
     const getData = async () => {
-      const resp = await axios.get('api/portfolio/history');
+      const token = await getAccessTokenSilently();
+      const resp = await axios.get('api/portfolio/history', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       // in USD
       const origHistInUsd = resp.data.map(el => {
         return [el.timestamp, el.portfolio_in_USD ]

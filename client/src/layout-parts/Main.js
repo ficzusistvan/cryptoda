@@ -10,6 +10,8 @@ import PortfolioHistoryPage from '../pages/PortfolioHistory.page';
 import InvestmentsPage from '../pages/Investments.page';
 import DCAConfigPage from '../pages/DCAConfig.page';
 import WalletsConfigPage from '../pages/WalletsConfig.page';
+import ProtectedRoute from '../auth/protected-route';
+import ProfilePage from '../pages/Profile.page';
 
 const Main = () => (
   <Row className='main'>
@@ -17,11 +19,12 @@ const Main = () => (
       <Switch>
         <Route exact path='/' component={HomePage} />
         <Route exact path='/rates' component={RatesPage} />
-        <Route exact path='/portfolio' component={PortfolioPage} />
-        <Route exact path='/portfolio-history' component={PortfolioHistoryPage} />
-        <Route exact path='/investments' component={InvestmentsPage} />
-        <Route exact path='/dca-config' component={DCAConfigPage} />
-        <Route exact path='/wallets-config' component={WalletsConfigPage} />
+        <ProtectedRoute exact path='/portfolio' component={PortfolioPage} />
+        <ProtectedRoute exact path='/portfolio-history' component={PortfolioHistoryPage} />
+        <ProtectedRoute exact path='/investments' component={InvestmentsPage} />
+        <ProtectedRoute exact path='/dca-config' component={DCAConfigPage} />
+        <ProtectedRoute exact path='/wallets-config' component={WalletsConfigPage} />
+        <ProtectedRoute exact path='/profile' component={ProfilePage} />
       </Switch>
     </Col>
   </Row>

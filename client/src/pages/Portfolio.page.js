@@ -1,27 +1,33 @@
 import axios from "axios";
 import { useEffect, useRef, useState, useMemo } from "react"
 import { Row, Col, Button } from 'reactstrap'
-import Zabo from 'zabo-sdk-js'
-import config from '../config.json'
+//import Zabo from 'zabo-sdk-js'
 import PortfolioTable from '../components/portfolio.table'
 import NumberFormat from 'react-number-format';
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Portfolio() {
   const [portfolio, setPortfolio] = useState([]);
   const [totalInUsd, setTotalInUsd] = useState(0);
   const [totalInEur, setTotalInEur] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
 
   const THIS_USER = 'myliveuser';
   //const THIS_USER = 'mysandboxuser';
 
-  let zabo = useRef();
+  //let zabo = useRef();
 
   useEffect(() => {
     console.log(`useEffect 1 called...`);
     setLoading(true);
     const getData = async () => {
-      const resp = await axios.get('api/portfolio');
+      const token = await getAccessTokenSilently();
+      const resp = await axios.get('api/portfolio', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       let totInUsd = 0;
       let totInEur = 0;
       for (const entity of resp.data) {
@@ -43,18 +49,18 @@ export default function Portfolio() {
       //const respUserExists = await axios.get(`api/zabo/zabo-user-exists?userId=${THIS_USER}`);
       //if (!respUserExists.data) {
       console.log('init zabo')
-      zabo.current = await Zabo.init({
+      //zabo.current = await Zabo.init({
         //clientId: config.zabo.sandbox.clientId,
         //env: 'sandbox'
-        clientId: config.zabo.live.clientId,
-        env: 'live'
-      });
+      //  clientId: '',
+      //  env: 'live'
+      //});
       //}
     }
     getData();
   }, []);
 
-  function zaboConnectToProvider(e) {
+  /*function zaboConnectToProvider(e) {
     zabo.current.connect({ provider: 'blockFi' }).onConnection(async (account) => {
       const respZaboUser = await axios.post('api/zabo/create-zabo-user', { userId: THIS_USER, account: account });
       console.log('Created user: ', respZaboUser.data);
@@ -63,7 +69,7 @@ export default function Portfolio() {
     }).onError(error => {
       console.error('account connection error:', error)
     })
-  }
+  }*/
 
   return (
     <>
@@ -82,7 +88,7 @@ export default function Portfolio() {
       </Row>
       <Row>
         <Col>
-          <Button color="primary" onClick={zaboConnectToProvider}>Connect to Zabo for BlockFi access</Button>
+          {/*<Button color="primary" onClick={zaboConnectToProvider}>Connect to Zabo for BlockFi access</Button>*/}
         </Col>
       </Row>
       <PortfolioTable data={portfolio} loading={loading} />

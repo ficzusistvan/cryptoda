@@ -3,12 +3,14 @@ import { React, useEffect, useState } from "react"
 import { Form, FormGroup, Label, Input, Row, Col, Button, Jumbotron } from 'reactstrap'
 import NumberFormat from 'react-number-format';
 import WalletsTable from '../components/wallets.table';
+import { useAuth0 } from "@auth0/auth0-react";
 
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function WalletsConfig() {
 
   const USER = `myliveuser`;
+  const { getAccessTokenSilently } = useAuth0();
 
   const [loading, setLoading] = useState(false)
   const [userWallets, setUserWallets] = useState([])
@@ -20,9 +22,18 @@ export default function WalletsConfig() {
   useEffect(() => {
     setLoading(true);
     const getData = async () => {
-      const resp = await axios.get(`api/wallet/user/${USER}`);
-      console.log(resp.data);
-      setUserWallets(resp.data);
+      try {
+        const token = await getAccessTokenSilently();
+        const resp = await axios.get(`api/wallet/user/${USER}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(resp.data);
+        setUserWallets(resp.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
     getData();
     setLoading(false);

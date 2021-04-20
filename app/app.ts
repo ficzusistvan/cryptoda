@@ -11,6 +11,7 @@ import config from './config.json'
 import * as portfolio from './tools/portfolio'
 import * as dca from './tools/dca'
 import { logger } from './logger'
+import helmet from 'helmet'
 
 const ONE_MINUTE = 60 * 1000;
 const INFURA_PROJECT_ID = config.infura.project_id;
@@ -38,6 +39,8 @@ const port = process.env.PORT || 5000;
 
 // create application/json parser
 const jsonParser = bodyParser.json()
+
+app.use(helmet());
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));

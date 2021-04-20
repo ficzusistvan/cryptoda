@@ -11,11 +11,15 @@ import store from "./redux/store";
 import { HashRouter } from 'react-router-dom';
 //import 'bootstrap/dist/css/bootstrap.css';
 
+import Auth0ProviderWithHistory from "./auth/auth0-provider-with-history";
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <HashRouter>
-        <App />
+        <Auth0ProviderWithHistory>
+          <App />
+        </Auth0ProviderWithHistory>
       </HashRouter>
     </Provider>
   </React.StrictMode>,
