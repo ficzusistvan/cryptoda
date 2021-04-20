@@ -44,10 +44,11 @@ app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: [
       "'self'",
-      "https://dev-9z71xtiv.eu.auth0.com"],
+      "https://*.auth0.com"],
     connectSrc: [
       "'self'",
-      "https://dev-9z71xtiv.eu.auth0.com"
+      "https://*.auth0.com",
+      "https://*.gravatar.com",
     ]
   },
 }));
