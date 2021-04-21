@@ -10,17 +10,14 @@ export default function Portfolio() {
   const [historyInUsd, setHistoryInUsd] = useState([]);
   const [historyInEur, setHistoryInEur] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { getAccessTokenSilently } = useAuth0();
-
-  const THIS_USER = 'myliveuser';
-  //const THIS_USER = 'mysandboxuser';
+  const { user, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     console.log(`useEffect 1 called...`);
     setLoading(true);
     const getData = async () => {
       const token = await getAccessTokenSilently();
-      const resp = await axios.get('api/portfolio/history', {
+      const resp = await axios.get(`api/portfolio/history/${user.sub}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

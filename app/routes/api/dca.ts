@@ -5,8 +5,8 @@ const debug = Debug('portfolio')
 import * as dca from '../../tools/dca'
 import checkJwt from '../../authz/check-jwt'
 
-router.get('/config', checkJwt, async function (req, res, next) {
-  res.json(await dca.getConfig('myliveuser'));
+router.get('/config/:user_id', checkJwt, async function (req, res, next) {
+  res.json(await dca.getConfig(req.params.user_id));
 });
 
 export = router;

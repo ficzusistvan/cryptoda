@@ -109,6 +109,12 @@ function getDcaConfig(userId: string) {
   return { dcaConfig, entries };
 }
 
+export function getUserIds() {
+  const stmt = db.prepare('SELECT DISTINCT user_id FROM wallet');
+  const userIds = stmt.all();
+  return userIds;
+}
+
 export {
   getWallets,
   insertOrUpdateWalletBalances,

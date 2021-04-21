@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react"
 import { Form, FormGroup, Label, Input, Row, Col, Button, Jumbotron } from 'reactstrap'
-//import config from '../config.json'
 import InvestmentsTable from '../components/investments.table'
 import NumberFormat from 'react-number-format';
 import DatePicker from "react-datepicker";
@@ -18,12 +17,10 @@ export default function Investments() {
   const [to, setTo] = useState('binance');
   const [investmentDate, setInvestmentDate] = useState(new Date());
   const [addInvestmentResponse, setAddInvestmentResponse] = useState(false);
-  const { getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
 
-  //const THIS_USER = 'myliveuser';
-  //const THIS_USER = 'mysandboxuser';
   const addInvestment = async () => {
-    const resp = await axios.post('api/portfolio/investment', { amount: amount, currency: currency, to: to, timestamp: investmentDate })
+    const resp = await axios.post(`api/portfolio/investment/${user.sub}`, { amount: amount, currency: currency, to: to, timestamp: investmentDate })
     setAddInvestmentResponse(resp.data);
   }
 
@@ -35,7 +32,7 @@ export default function Investments() {
       console.log(resp1.data);
       const rates = resp1.data.rates;
       const token = await getAccessTokenSilently();
-      const resp2 = await axios.get('api/portfolio/investment', {
+      const resp2 = await axios.get(`api/portfolio/investment/${user.sub}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

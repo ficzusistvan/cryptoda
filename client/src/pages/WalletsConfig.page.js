@@ -9,8 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export default function WalletsConfig() {
 
-  const USER = `myliveuser`;
-  const { getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
 
   const [loading, setLoading] = useState(false)
   const [userWallets, setUserWallets] = useState([])
@@ -24,7 +23,7 @@ export default function WalletsConfig() {
     const getData = async () => {
       try {
         const token = await getAccessTokenSilently();
-        const resp = await axios.get(`api/wallet/user/${USER}`, {
+        const resp = await axios.get(`api/wallet/user/${user.sub}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

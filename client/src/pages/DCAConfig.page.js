@@ -8,14 +8,14 @@ export default function DCAConfig() {
   const [config, setConfig] = useState({});
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     console.log(`useEffect 1 called...`);
     setLoading(true);
     const getData = async () => {
       const token = await getAccessTokenSilently();
-      const resp1 = await axios.get('api/dca/config', {
+      const resp1 = await axios.get(`api/dca/config/${user.sub}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

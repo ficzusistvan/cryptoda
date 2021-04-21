@@ -11,10 +11,7 @@ export default function Portfolio() {
   const [totalInUsd, setTotalInUsd] = useState(0);
   const [totalInEur, setTotalInEur] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { getAccessTokenSilently } = useAuth0();
-
-  const THIS_USER = 'myliveuser';
-  //const THIS_USER = 'mysandboxuser';
+  const { user, getAccessTokenSilently } = useAuth0();
 
   //let zabo = useRef();
 
@@ -23,7 +20,7 @@ export default function Portfolio() {
     setLoading(true);
     const getData = async () => {
       const token = await getAccessTokenSilently();
-      const resp = await axios.get('api/portfolio', {
+      const resp = await axios.get(`api/portfolio/${user.sub}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

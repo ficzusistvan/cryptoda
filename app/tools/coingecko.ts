@@ -2,6 +2,7 @@ import axios from 'axios'
 import Big from 'big.js'
 import Debug from 'debug'
 const debug = Debug('coingecko')
+import { logger } from '../logger'
 
 const URL: string = "https://api.coingecko.com/api/v3/";
 interface iCoinsListEntry {
@@ -33,6 +34,7 @@ async function getCoinsList() {
 }
 
 export async function cacheSimplePrice(vs_currencies: Array<string>) {
+  logger.info(`cacheSimplePrice ${vs_currencies} started...`);
   const coinIds: Array<string> = coinsList.map((coin: iCoinsListEntry) => {
     return coin.id;
   });
@@ -67,6 +69,7 @@ export async function cacheSimplePrice(vs_currencies: Array<string>) {
     }
     debug(`Prices ${JSON.stringify(prices, replacer)}`);
   });
+  logger.info(`cacheSimplePrice ${vs_currencies} ended!`);
 }
 
 export async function getSimplePrice(symbols: Array<string>, vs_currencies: Array<string>) {

@@ -12,6 +12,7 @@ import * as portfolio from './tools/portfolio'
 import * as dca from './tools/dca'
 import { logger } from './logger'
 import helmet from 'helmet'
+import * as db from './db'
 
 const ONE_MINUTE = 60 * 1000;
 const INFURA_PROJECT_ID = config.infura.project_id;
@@ -103,32 +104,41 @@ let updateCryptoCurrencyPricesTask = async () => {
   setTimeout(updateCryptoCurrencyPricesTask, UPDATE_CRYPTO_CURRENCY_PRICES_TASK_PERIOD * ONE_MINUTE);
 }
 
-let updateUserWalletsTask = () => {
-  portfolio.updateUserWallets('myliveuser');
+let updateUserWalletsTask = async () => {
+  const results = db.getUserIds();
+  for (const res of results) {
+    await portfolio.updateUserWallets(res.user_id);
+  }
   setTimeout(updateUserWalletsTask, UPDATE_USER_WALLETS_TASK_PERIOD * ONE_MINUTE);
 }
 
-let createUserWalletsSnapshotTask = () => {
-  portfolio.createUserWalletsSnapshot('myliveuser');
+let createUserWalletsSnapshotTask = async () => {
+  const results = db.getUserIds();
+  for (const res of results) {
+    await portfolio.createUserWalletsSnapshot(res.user_id);
+  }
   setTimeout(createUserWalletsSnapshotTask, CREATE_USER_WALLETS_SNAPSHOT_TASK_PERIOD * ONE_MINUTE);
 }
 
-let runDCATask = () => {
-  dca.runDCA('myliveuser');
+let runDCATask = async () => {
+  const results = db.getUserIds();
+  for (const res of results) {
+    await dca.runDCA(res.user_id);
+  }
   setTimeout(runDCATask, RUN_DCA_TASK_PERIOD * ONE_MINUTE);
 }
 
-let startCyclicTasks = () => {
+let startCyclicTasks = async () => {
   // save current crypto prices
-  IS_UPDATE_FIAT_CURRENCY_RATES_TASK_ENABLED && updateFiatCurrencyRatesTask();
+  IS_UPDATE_FIAT_CURRENCY_RATES_TASK_ENABLED && await updateFiatCurrencyRatesTask();
   // save current crypto prices
-  IS_UPDATE_CRYPTO_CURRENCY_PRICES_TASK_ENABLED && updateCryptoCurrencyPricesTask();
+  IS_UPDATE_CRYPTO_CURRENCY_PRICES_TASK_ENABLED && await updateCryptoCurrencyPricesTask();
   // update user wallets
-  IS_UPDATE_USER_WALLETS_TASK_ENABLED && updateUserWalletsTask();
+  IS_UPDATE_USER_WALLETS_TASK_ENABLED && await updateUserWalletsTask();
   // save user wallets snapshot
-  IS_CREATE_USER_WALLETS_SNAPSHOT_TASK_ENABLED && createUserWalletsSnapshotTask();
+  IS_CREATE_USER_WALLETS_SNAPSHOT_TASK_ENABLED && await createUserWalletsSnapshotTask();
   // run DCA
-  IS_RUN_DCA_TASK_ENABLED && runDCATask();
+  IS_RUN_DCA_TASK_ENABLED && await runDCATask();
 }
 
 (async () => {
