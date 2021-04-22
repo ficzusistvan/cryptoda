@@ -23,6 +23,13 @@ export async function getBalance() {
   return resp;
 }
 
+export async function getDesposits() {
+  // TODO: binance API doesn't support fiat deposit/withdrawal history!
+  const deposits = await binance.fetchDeposits('EUR', undefined, undefined, {});
+  console.log(`binance deposits: ${JSON.stringify(deposits)}`);
+  return deposits;
+}
+
 export async function buyAsset(symbol: string, amount: number) {
   logger.info(`Buying [${amount}] of [${symbol}] on binance...`);
   try {

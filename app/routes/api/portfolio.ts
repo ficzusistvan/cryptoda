@@ -20,8 +20,10 @@ router.get('/history/:user_id', checkJwt, async function (req, res, next) {
 });
 
 router.get('/investment/:user_id', checkJwt, async function(req, res, next) {
-  const investments = await db.getInvestments(req.params.user_id);
-  res.json(investments);
+  const dbInvestments = await db.getInvestments(req.params.user_id);
+  const exchangeInvestments = await portfolio.getInvestments(req.params.user_id);
+  const all = [...dbInvestments, ...exchangeInvestments];
+  res.json(all);
 });
 
 router.post('/investment/:user_id', checkJwt, async function(req, res, next) {

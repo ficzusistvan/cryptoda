@@ -93,6 +93,12 @@ async function getBinanceBalances(apiKey: string, apiSecret: string) {
   return balances;
 }
 
+async function getBinanceDeposits(apiKey: string, apiSecret: string) {
+  await binance.init(apiKey, apiSecret);
+  const binanceDeposits = await binance.getDesposits();
+  return binanceDeposits;
+}
+
 async function getCelsiusBalances(apiKey: string, partnerKey: string) {
   const balances: Array<i.iBalance> = [];
   await celsius.init(partnerKey, apiKey);
@@ -111,6 +117,12 @@ async function getCoinbaseBalances(apiKey: string, secretKey: string) {
     balances.push({ symbol: (key as string).toUpperCase(), balance: Big(value) });
   }
   return balances;
+}
+
+async function getCoinbaseDeposits(apiKey: string, apiSecret: string) {
+  await coinbase.init(apiKey, apiSecret);
+  const coinbaseDeposits = await coinbase.getDesposits();
+  return coinbaseDeposits;
 }
 
 async function getZaboBalances(apiKey: string, apiSecret: string) {
@@ -245,4 +257,30 @@ export function getPortfolio(userId: string) {
 
 export function getPortfolioHistory(userId: string) {
   return db.getPortfolioHistory(userId);
+}
+
+export async function getInvestments(userId: string) {
+  const userWallets = db.getWallets(userId);
+  const deposits: Array<any> = [];
+  for (const wallet of userWallets) {
+    switch (wallet.type) {
+      case 'Binance':
+        const binanceDeposits = await getBinanceDeposits(wallet.api_key, wallet.secret_key);
+        break;
+      case 'Coinbase':
+        const coinbaseDeposits = await getCoinbaseDeposits(wallet.api_key, wallet.secret_key);
+        for (const dep of coinbaseDeposits) {
+          deposits.push({
+            amount: dep.amount,
+            currency: dep.currency,
+            to: 'Coinbase',
+            timestamp: dep.datetime
+          });
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  return deposits;
 }
