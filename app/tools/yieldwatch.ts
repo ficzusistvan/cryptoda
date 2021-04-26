@@ -12,16 +12,21 @@ export async function getYieldWatch(address: string) {
   if (resp.data.status === '1' && resp.data.message === 'OK') {
     const myLPStaking = resp.data.result.PancakeSwap.LPStaking;
     const eurPerUsd: Big = getEurPerCurrencyRate('USD') || Big(1);
+    let symbol: string = '';
+    let balance: number = 0;
     for (const vault of myLPStaking.vaults) {
-      balances.push({ 
-        symbol: vault.name, 
-        balance: Big(vault.LPInfo.depositToken0 * vault.LPInfo.depositToken1), 
-        usdPrice: Big(myLPStaking.totalUSDValues.total).div(vault.LPInfo.depositToken0 * vault.LPInfo.depositToken1),
-        usdValue: Big(myLPStaking.totalUSDValues.total),
-        eurPrice: Big(myLPStaking.totalUSDValues.total).div(eurPerUsd),
-        eurValue: Big(myLPStaking.totalUSDValues.total).div(vault.LPInfo.depositToken0 * vault.LPInfo.depositToken1).div(eurPerUsd)
-      });
+      symbol += `${vault.name},`;
+      balance++;
     }
+    symbol = symbol.substring(0, symbol.length - 1);
+    balances.push({
+      symbol: symbol,
+      balance: Big(balance),
+      usdPrice: Big(myLPStaking.totalUSDValues.total).div(balance),
+      usdValue: Big(myLPStaking.totalUSDValues.total),
+      eurPrice: Big(myLPStaking.totalUSDValues.total).div(eurPerUsd),
+      eurValue: Big(myLPStaking.totalUSDValues.total).div(balance)
+    });
   }
   return balances;
 }
