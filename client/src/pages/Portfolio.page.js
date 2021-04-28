@@ -11,6 +11,7 @@ export default function Portfolio() {
   const [totalInUsd, setTotalInUsd] = useState(0);
   const [totalInEur, setTotalInEur] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState('unknown');
   const { user, getAccessTokenSilently } = useAuth0();
 
   //let zabo = useRef();
@@ -34,6 +35,7 @@ export default function Portfolio() {
       setPortfolio(resp.data);
       setTotalInUsd(totInUsd);
       setTotalInEur(totInEur);
+      setLastUpdated(new Date(resp.data[0].timestamp).toISOString());
     }
     getData();
     setLoading(false);
@@ -47,8 +49,8 @@ export default function Portfolio() {
       //if (!respUserExists.data) {
       console.log('init zabo')
       //zabo.current = await Zabo.init({
-        //clientId: config.zabo.sandbox.clientId,
-        //env: 'sandbox'
+      //clientId: config.zabo.sandbox.clientId,
+      //env: 'sandbox'
       //  clientId: '',
       //  env: 'live'
       //});
@@ -80,6 +82,7 @@ export default function Portfolio() {
           <div class="alert alert-success">
             <p>Total balance in USD: <strong><NumberFormat value={totalInUsd} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} /></strong></p>
             <p>Total balance in Euro: <strong><NumberFormat value={totalInEur} displayType={'text'} thousandSeparator={true} suffix={' EUR'} decimalScale={2} /></strong></p>
+            <p>Last updated: <strong>{lastUpdated}</strong></p>
           </div>
         </Col>
       </Row>
