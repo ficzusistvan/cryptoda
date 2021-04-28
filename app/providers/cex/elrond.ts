@@ -13,19 +13,19 @@ export async function getBalance(address: string) {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[elrond] ${error.response.data}`);
+      logger.error(`[elrond] ${error.response.status}`);
+      logger.error(`[elrond] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[elrond] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[elrond] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[elrond] ${error.config}`);
     return 0;
   }
 }

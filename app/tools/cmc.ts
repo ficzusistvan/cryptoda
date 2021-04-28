@@ -22,19 +22,19 @@ export async function getListings(start: number, limit: number, convert: string)
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[cmc] [cmc] ${error.response.data}`);
+      logger.error(`[cmc] ${error.response.status}`);
+      logger.error(`[cmc] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[cmc] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[cmc] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[cmc] ${error.config}`);
   }
 }
 
@@ -56,19 +56,19 @@ export async function getInfo(symbol: string) {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[cmc] ${error.response.data}`);
+      logger.error(`[cmc] ${error.response.status}`);
+      logger.error(`[cmc] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[cmc] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[cmc] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[cmc] ${error.config}`);
   }
 }
 
@@ -87,18 +87,18 @@ export async function getGlobalMetrics() {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[cmc] ${error.response.data}`);
+      logger.error(`[cmc] ${error.response.status}`);
+      logger.error(`[cmc] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[cmc] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[cmc] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[cmc] ${error.config}`);
   }
 }

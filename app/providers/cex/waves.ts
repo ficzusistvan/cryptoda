@@ -15,42 +15,44 @@ export async function getBalance(address: string) {
           const assetDetailsResp = await axios.get(`https://nodes.wavesnodes.com/assets/details/${balance.assetId}?full=false`, { timeout: 3000 });
           balances[assetDetailsResp.data.name] = balance.balance / Math.pow(10, assetDetailsResp.data.decimals);
         } catch (error) {
+          console.log(JSON.stringify(error))
           if (error.response) {
             // The request was made and the server responded with a status code
             // that falls out of the range of 2xx
-            logger.error(error.response.data);
-            logger.error(error.response.status);
-            logger.error(error.response.headers);
+            logger.error(`[waves] ${error.response.data}`);
+            logger.error(`[waves] ${error.response.status}`);
+            logger.error(`[waves] ${error.response.headers}`);
           } else if (error.request) {
             // The request was made but no response was received
             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
             // http.ClientRequest in node.js
-            logger.error(error.request);
+            logger.error(`[waves] ${error.request}`);
           } else {
             // Something happened in setting up the request that triggered an Error
-            logger.error('Error', error.message);
+            logger.error(`[waves] ${error.message}`);
           }
-          logger.error(error.config);
+          logger.error(`[waves] ${error.config}`);
         }
       }
     }
   } catch (error) {
+    console.log(JSON.stringify(error))
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[waves] ${error.response.data}`);
+      logger.error(`[waves] ${error.response.status}`);
+      logger.error(`[waves] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[waves] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[waves] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[waves] ${error.config}`);
   }
   return balances;
 }
@@ -70,19 +72,19 @@ export async function getUSDCLPPriceInUsd() {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[waves] ${error.response.data}`);
+      logger.error(`[waves] ${error.response.status}`);
+      logger.error(`[waves] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[waves] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[waves] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[waves] ${error.config}`);
     return 0;
   }
 }
@@ -100,19 +102,19 @@ export async function getUSDCLPPriceInEur() {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[waves] ${error.response.data}`);
+      logger.error(`[waves] ${error.response.status}`);
+      logger.error(`[waves] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[waves] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[waves] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[waves] ${error.config}`);
     return 0;
   }
 }

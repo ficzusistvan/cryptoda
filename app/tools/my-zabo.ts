@@ -12,7 +12,7 @@ export async function init(apiKey: string, secret: string, env: string) {
       env: env
     });
   } catch (error) {
-    logger.error(error);
+    logger.error(`[my-zabo] ${error}`);
   }
 }
 
@@ -37,7 +37,7 @@ export async function getBlockFiBalance(userId: string) {
       accountId: myZaboUserObject.accounts[0].id
     });
   } catch (err) {
-    logger.error(err);
+    logger.error(`[my-zabo] ${err}`);
   }
 
   if (zaboBalances) {

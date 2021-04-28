@@ -36,19 +36,19 @@ async function getCoinsList() {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[coingecko] ${error.response.data}`);
+      logger.error(`[coingecko] ${error.response.status}`);
+      logger.error(`[coingecko] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[coingecko] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[coingecko] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[coingecko] ${error.config}`);
   }
 }
 
@@ -91,19 +91,19 @@ export async function cacheSimplePrice(vs_currencies: Array<string>) {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[coingecko] ${error.response.data}`);
+      logger.error(`[coingecko] ${error.response.status}`);
+      logger.error(`[coingecko] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[coingecko] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[coingecko] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[coingecko] ${error.config}`);
   });
   logger.info(`cacheSimplePrice ${vs_currencies} ended!`);
 }
@@ -148,19 +148,19 @@ export async function getSimplePrice(symbols: Array<string>, vs_currencies: Arra
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[coingecko] ${error.response.data}`);
+      logger.error(`[coingecko] ${error.response.status}`);
+      logger.error(`[coingecko] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[coingecko] ${error.request}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[coingecko] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[coingecko] ${error.config}`);
   }
   return prices;
 }

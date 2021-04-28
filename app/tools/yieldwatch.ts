@@ -5,11 +5,12 @@ import * as i from '../interfaces'
 import { getEurPerCurrencyRate } from './fiat'
 import Big from 'big.js'
 import { logger } from '../logger'
+import { inspect } from 'util'
 
 export async function getYieldWatch(address: string) {
   const balances: Array<i.iBalance> = [];
   try {
-    const resp = await axios.get(`https://www.yieldwatch.net/api/all/${address}?platforms=pancake`, { timeout: 3000 });
+    const resp = await axios.get(`https://www.yieldwatch.net/api/all/${address}?platforms=pancake`, { timeout: 30000 });
     debug(resp.data.result);
     if (resp.data.status === '1' && resp.data.message === 'OK') {
       const myLPStaking = resp.data.result.PancakeSwap.LPStaking;
@@ -34,19 +35,19 @@ export async function getYieldWatch(address: string) {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      logger.error(error.response.data);
-      logger.error(error.response.status);
-      logger.error(error.response.headers);
+      logger.error(`[yieldwatch] ${error.response.data}`);
+      logger.error(`[yieldwatch] ${error.response.status}`);
+      logger.error(`[yieldwatch] ${error.response.headers}`);
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      logger.error(error.request);
+      logger.error(`[yieldwatch] ${inspect(error.request)}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logger.error('Error', error.message);
+      logger.error(`[yieldwatch] ${error.message}`);
     }
-    logger.error(error.config);
+    logger.error(`[yieldwatch] ${error.config}`);
   }
   return balances;
 }
