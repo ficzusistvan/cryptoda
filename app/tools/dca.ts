@@ -34,22 +34,42 @@ let totalAdjustedPercent: Big = Big(0);
 let coins: Array<any>;
 
 async function getListings(limit: number, cryptocurrencyType: eCMCcryptocurrencyType) {
-  const response = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest',
-    {
-      headers: {
-        'X-CMC_PRO_API_KEY': CMC_PRO_API_KEY
-      },
-      params: {
-        'start': 1,
-        'limit': limit,
-        'convert': 'USD',
-        'sort': 'market_cap',
-        'sort_dir': 'desc',
-        'cryptocurrency_type': cryptocurrencyType
+  try {
+    const response = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest',
+      {
+        headers: {
+          'X-CMC_PRO_API_KEY': CMC_PRO_API_KEY
+        },
+        params: {
+          'start': 1,
+          'limit': limit,
+          'convert': 'USD',
+          'sort': 'market_cap',
+          'sort_dir': 'desc',
+          'cryptocurrency_type': cryptocurrencyType
+        },
+        timeout: 3000
       }
+    )
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      logger.error(error.response.data);
+      logger.error(error.response.status);
+      logger.error(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      logger.error(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      logger.error('Error', error.message);
     }
-  )
-  return response.data;
+    logger.error(error.config);
+  }
 }
 
 const formatter = new Intl.NumberFormat('en-US', {

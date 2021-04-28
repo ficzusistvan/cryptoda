@@ -18,7 +18,7 @@ export async function init() {
 }
 
 function replacer(key: any, value: any) {
-  if(value instanceof Map) {
+  if (value instanceof Map) {
     return {
       dataType: 'Map',
       value: Array.from(value.entries()), // or with spread: value: [...value]
@@ -29,8 +29,27 @@ function replacer(key: any, value: any) {
 } // Used for debugging
 
 async function getCoinsList() {
-  const resp = await axios.get(URL + `coins/list`);
-  return resp.data;
+  try {
+    const resp = await axios.get(URL + `coins/list`, { timeout: 3000 });
+    return resp.data;
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      logger.error(error.response.data);
+      logger.error(error.response.status);
+      logger.error(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      logger.error(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      logger.error('Error', error.message);
+    }
+    logger.error(error.config);
+  }
 }
 
 export async function cacheSimplePrice(vs_currencies: Array<string>) {
@@ -68,6 +87,23 @@ export async function cacheSimplePrice(vs_currencies: Array<string>) {
       }
     }
     debug(`Prices ${JSON.stringify(prices, replacer)}`);
+  }).catch((error) => {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      logger.error(error.response.data);
+      logger.error(error.response.status);
+      logger.error(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      logger.error(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      logger.error('Error', error.message);
+    }
+    logger.error(error.config);
   });
   logger.info(`cacheSimplePrice ${vs_currencies} ended!`);
 }
@@ -85,28 +121,47 @@ export async function getSimplePrice(symbols: Array<string>, vs_currencies: Arra
     return coin.id;
   })
 
-  const respSimplePrice = await axios.get(URL + `simple/price?ids=${coinIds.join(',')}&vs_currencies=${vs_currencies.join(',')}`);
-  debug(`respSimplePrice: ${JSON.stringify(respSimplePrice.data)}`);
-
   let prices: Map<string, Map<string, Big>> = new Map();
-  for (const [coinId, simplePrices] of (Object as any).entries(respSimplePrice.data)) {
-    const coinsListEntry = filteredCoinsList.find((entry: iCoinsListEntry) => {
-      return entry.id === coinId;
-    })
-    if (coinsListEntry) {
-      const symbol = symbols.find((symbol: string) => {
-        return symbol.toLowerCase() === coinsListEntry.symbol;
-      });
-      if (symbol) {
-        let currencyPrices = new Map();
-        for (const [currency, price] of (Object as any).entries(simplePrices)) {
-          currencyPrices.set(currency, Big(price));
+  try {
+    const respSimplePrice = await axios.get(URL + `simple/price?ids=${coinIds.join(',')}&vs_currencies=${vs_currencies.join(',')}`, { timeout: 3000 });
+    debug(`respSimplePrice: ${JSON.stringify(respSimplePrice.data)}`);
+
+    for (const [coinId, simplePrices] of (Object as any).entries(respSimplePrice.data)) {
+      const coinsListEntry = filteredCoinsList.find((entry: iCoinsListEntry) => {
+        return entry.id === coinId;
+      })
+      if (coinsListEntry) {
+        const symbol = symbols.find((symbol: string) => {
+          return symbol.toLowerCase() === coinsListEntry.symbol;
+        });
+        if (symbol) {
+          let currencyPrices = new Map();
+          for (const [currency, price] of (Object as any).entries(simplePrices)) {
+            currencyPrices.set(currency, Big(price));
+          }
+          prices.set(symbol, currencyPrices);
         }
-        prices.set(symbol, currencyPrices);
       }
     }
+    debug(`Coingecko prices: ${JSON.stringify(Array.from(prices))}`)
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      logger.error(error.response.data);
+      logger.error(error.response.status);
+      logger.error(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      logger.error(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      logger.error('Error', error.message);
+    }
+    logger.error(error.config);
   }
-  debug(`Coingecko prices: ${JSON.stringify(Array.from(prices))}`)
   return prices;
 }
 
