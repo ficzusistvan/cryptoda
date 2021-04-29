@@ -94,36 +94,56 @@ app.listen(port, () => {
   logger.info(`⚡️[server]: Server is running at https://localhost:${port}`);
 });
 
-let updateFiatCurrencyRatesTask = async() => {
-  await fiat.cacheRates(EXCHANGERATESAPI_ACCESS_KEY);
+let updateFiatCurrencyRatesTask = async () => {
+  try {
+    await fiat.cacheRates(EXCHANGERATESAPI_ACCESS_KEY);
+  } catch (error) {
+    logger.error(`[updateFiatCurrencyRatesTask] ${JSON.stringify(error)}`);
+  }
   setTimeout(updateFiatCurrencyRatesTask, UPDATE_FIAT_CURRENCY_RATES_TASK_PERIOD * ONE_MINUTE);
 }
 
 let updateCryptoCurrencyPricesTask = async () => {
-  await gecko.cacheSimplePrice(['usd', 'eur']);
+  try {
+    await gecko.cacheSimplePrice(['usd', 'eur']);
+  } catch (error) {
+    logger.error(`[updateCryptoCurrencyPricesTask] ${JSON.stringify(error)}`);
+  }
   setTimeout(updateCryptoCurrencyPricesTask, UPDATE_CRYPTO_CURRENCY_PRICES_TASK_PERIOD * ONE_MINUTE);
 }
 
 let updateUserWalletsTask = async () => {
-  const results = db.getUserIds();
-  for (const res of results) {
-    await portfolio.updateUserWallets(res.user_id);
+  try {
+    const results = db.getUserIds();
+    for (const res of results) {
+      await portfolio.updateUserWallets(res.user_id);
+    }
+  } catch (error) {
+    logger.error(`[updateUserWalletsTask] ${JSON.stringify(error)}`);
   }
   setTimeout(updateUserWalletsTask, UPDATE_USER_WALLETS_TASK_PERIOD * ONE_MINUTE);
 }
 
 let createUserWalletsSnapshotTask = async () => {
-  const results = db.getUserIds();
-  for (const res of results) {
-    await portfolio.createUserWalletsSnapshot(res.user_id);
+  try {
+    const results = db.getUserIds();
+    for (const res of results) {
+      await portfolio.createUserWalletsSnapshot(res.user_id);
+    }
+  } catch (error) {
+    logger.error(`[createUserWalletsSnapshotTask] ${JSON.stringify(error)}`);
   }
   setTimeout(createUserWalletsSnapshotTask, CREATE_USER_WALLETS_SNAPSHOT_TASK_PERIOD * ONE_MINUTE);
 }
 
 let runDCATask = async () => {
-  const results = db.getUserIds();
-  for (const res of results) {
-    await dca.runDCA(res.user_id);
+  try {
+    const results = db.getUserIds();
+    for (const res of results) {
+      await dca.runDCA(res.user_id);
+    }
+  } catch (error) {
+    logger.error(`[runDCATask] ${JSON.stringify(error)}`);
   }
   setTimeout(runDCATask, RUN_DCA_TASK_PERIOD * ONE_MINUTE);
 }
