@@ -27,8 +27,8 @@ export async function getYieldWatch(address: string) {
         balance: Big(balance),
         usdPrice: Big(myLPStaking.totalUSDValues.total).div(balance),
         usdValue: Big(myLPStaking.totalUSDValues.total),
-        eurPrice: Big(myLPStaking.totalUSDValues.total).div(eurPerUsd),
-        eurValue: Big(myLPStaking.totalUSDValues.total).div(balance)
+        eurPrice: Big(myLPStaking.totalUSDValues.total).div(balance).div(eurPerUsd),
+        eurValue: Big(myLPStaking.totalUSDValues.total).div(eurPerUsd)
       });
     }
   } catch (error) {
