@@ -77,8 +77,16 @@ let init = async () => {
   await ethereum.init(INFURA_PROJECT_ID, INFURA_PROJECT_SECRET);
   logger.info(`Ethereum init`);
 
+  const ethEthPrice = await ethereum.getPrice();
+  logger.info(`Price ${ethEthPrice}`);
+
   await bsc.init(INFURA_PROJECT_ID, INFURA_PROJECT_SECRET);
   logger.info(`BSC init`);
+
+  const bscEthPrice = await ethereum.getPrice();
+  logger.info(`Price ${bscEthPrice}`);
+
+  await ethereum.getExpectedReturn1inch();
 
   //await zabo.init(ZABO_SANDBOX_API_KEY, ZABO_SANDBOX_SECRET_KEY, 'sandbox');
   await zabo.init(ZABO_LIVE_API_KEY, ZABO_LIVE_SECRET_KEY, 'live');
